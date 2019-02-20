@@ -3,8 +3,10 @@
 
 class nir_img
 {
-     nir_img( char* img_name );
 public:
+     // for type see opencv doc cv::Mat
+     nir_img( char* img_name, int type );
+     nir_img( cv::Mat& img );
      enum
      {
           BLUE = 0,
@@ -12,10 +14,21 @@ public:
           RED = 2
      } RGB; // todo delete if will not using
 
-     void DFT( cv::Mat& img );
-private:
+     // @brief create discrete fourier transform
+     cv::Mat DFT() const;
+     
+     // @brief functions for create DFT phase coefficient matrix
+     cv::Mat get_DFT_phase() const;
+
+     // @brief functions for create DFT amplitude
+     cv::Mat get_DFT_amplitude() const;
+
+     // @brief function for get img_
+     cv::Mat get_img() const;
+
+   private:
      cv::Mat img_;
-}
+};
 
 /*
      пробежка по пикселям и построение решеточки
@@ -33,10 +46,4 @@ private:
                }
           }
      }
-*/
-
-/*
-преобразование фурье ( не тестил )
-std::vector<std::complex<float> > fourierCV; // output
-cv::dft( std::vector<float>( centroidDistance, centroidDistance + this->N ), fourierCV, cv::DFT_SCALE | cv::DFT_COMPLEX_OUTPUT );
 */
