@@ -1,6 +1,8 @@
+SRC=main.cpp \
+		dft.cpp \
+		misc.cpp \
+		test.cpp 
 all:
-	g++ 	main.cpp \
-		image.cpp \
-	-o main `pkg-config opencv --cflags --libs` -lfftw3
+	g++ -o main $(SRC) `pkg-config opencv --cflags --libs` -lfftw3
 
 
