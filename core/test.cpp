@@ -1,15 +1,20 @@
-#include "test.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
 #include <iostream>
+
+#include "test.h"
 #include "misc.h"
 #include "dft.h"
+#include "embedding.h"
+#include "log.h"
 
 using namespace cv;
+
 namespace nir_test
 {
-     void test_vec()
+void test_vec()
 {
      std::vector<std::vector<float> > img_v( 8 );
      img_v[ 0 ].push_back( 131 );
@@ -80,17 +85,35 @@ namespace nir_test
      img_v[ 7 ].push_back( 111 );
 
      nir_dft img = nir_dft( img_v );
-     std::cout << "img.do_dft();\n";
-     nir_misc::print_vec( img.do_dft() );
-     std::cout << "do_phase_vec\n";
-     Mat mimg;
-     nir_misc::vecToMat( img.do_dft(), img.re(), mimg );
-     std::cout << "printMAT(mimg);\n";
-     nir_misc::print_Mat( mimg );
-     cv::Mat inverseTransform;
-     cv::dft( mimg, inverseTransform, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT );
-     std::cout << "printMAT(inv mimg);\n";
-     nir_misc::print_Mat( inverseTransform );
+
+     const int k = 1; // todo сделать подсчет блоков в пикче
+     const std::string message = "011111000011101";
+     const int Acrit = 10; // todo fixme
+     const float area_width = nir_misc::count_area_width( message.length(), k );
+     if( -1 == area_width )
+     {
+          nir_log::error( "area width < 0" );
+          return;
+     }
+
+     nir_embedding emb = nir_embedding( img.calc_phase( img.im(), img.re() ) );
+
+     if( !emb.may_we_embedding( Acrit ) )
+     {
+          nir_log::error( "can't be embedded in this block" );
+          return;
+     }
+
+     std::vector<float> test = emb.count_auxiliary_sequence( area_width );
+     nir_misc::print_vec( emb.find_clear_sequence( test ) );
+     for( int i = 0; i < test.size(); i++ )
+     {
+          std::cout << test[ i ] << " ";
+     }
+     std::cout << emb.calculate_overlay_options( emb.find_clear_sequence( test ) );
+
+     std::cout << std::endl;
+     std::cout << emb.get_clear_sequence_count() << std::endl;
 }
 
 void test()
@@ -181,4 +204,4 @@ void test()
      nir_misc::print_Mat( fourierTransform );
      nir_misc::print_Mat( inverseTransform );
 }
-}
+} // namespace nir_test

@@ -7,12 +7,12 @@
 #include "dft.h"
 #include "test.h"
 #include <vector>
-
+#include "log.h"
 
 int main()
 {
      char* pic = "Lenna1.jpeg";
-     nir_test::test();
+     // nir_test::test();
      nir_test::test_vec();
      return 0;
 }

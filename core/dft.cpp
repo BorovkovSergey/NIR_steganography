@@ -1,25 +1,32 @@
 #include "dft.h"
+#include "log.h"
+
 #include <math.h>
 #include <iostream>
 
-nir_dft::nir_dft( vecImg& im )
+nir_dft::nir_dft( const vecImg& im )
      : img_( im )
 {
+     nir_log::info( "Start nir_dft constructor vec" );
+     nir_log::info( "End nir_dft constructor vec" );
 }
 
-nir_dft::nir_dft( cv::Mat& im )
+nir_dft::nir_dft( const cv::Mat& im )
      : img_( im.rows )
 {
-     for( unsigned int i = 0; i < im.rows; i++ ) // todo convvert Mat to vecImg!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 26.02.2019
+     nir_log::info( "Start nir_dft constructor Mat" );
+
+     for( unsigned int i = 0; i < im.rows; i++ )
      {
           for( unsigned j = 0; j < im.cols; j++ )
           {
                img_[ i ].push_back( im.at<float>( i, j ) );
           }
      }
+     nir_log::info( "End nir_dft constructor Mat" );
 }
 
-float nir_dft::re_( float x, float y ) const
+float nir_dft::re_( const float x, const float y ) const
 {
      float ans = 0;
      for( int i = 0; i < img_.size(); i++ )
@@ -29,11 +36,10 @@ float nir_dft::re_( float x, float y ) const
                ans += img_[ i ][ j ] * cosf32( -1 * ( i * x / img_.size() + j * y / img_.size() ) * M_PI * 2 );
           }
      }
-
      return ans / 64;
 }
 
-float nir_dft::im_( float x, float y ) const
+float nir_dft::im_( const float x, const float y ) const
 {
      float ans = 0;
      for( int i = 0; i < img_.size(); i++ )
@@ -43,11 +49,11 @@ float nir_dft::im_( float x, float y ) const
                ans += img_[ i ][ j ] * sinf32( -1 * ( i * x / img_.size() + j * y / img_.size() ) * M_PI * 2 );
           }
      }
-
      return ans / 64;
 }
-vecImg nir_dft::calc_phase( vecImg im, vecImg re ) const
+vecImg nir_dft::calc_phase( const vecImg& im, const vecImg& re ) const
 {
+     nir_log::info( "Start calc_phase" );
      vecImg ret = re;
      for( int j = 0; j < re.size(); j++ )
      {
@@ -61,11 +67,13 @@ vecImg nir_dft::calc_phase( vecImg im, vecImg re ) const
                ret[ i ][ j ] = atan2f32( im[ i ][ j ], re[ i ][ j ] );
           }
      }
+     nir_log::info( "End calc_phase" );
      return ret;
 }
 
-vecImg nir_dft::calc_amp( vecImg im, vecImg re ) const
+vecImg nir_dft::calc_amp( const vecImg& im, const vecImg& re ) const
 {
+     nir_log::info( "Start calc_amp" );
      vecImg ret = re;
      for( int i = 0; i < re.size(); i++ )
      {
@@ -74,11 +82,13 @@ vecImg nir_dft::calc_amp( vecImg im, vecImg re ) const
                ret[ i ][ j ] = sqrt( im[ i ][ j ] * im[ i ][ j ] + re[ i ][ j ] * re[ i ][ j ] );
           }
      }
+     nir_log::info( "End calc_amp" );
      return ret;
 }
 
 vecImg nir_dft::im() const
 {
+     nir_log::info( "Start im" );
      vecImg ret = img_;
      for( int i = 0; i < img_.size(); i++ )
      {
@@ -87,10 +97,12 @@ vecImg nir_dft::im() const
                ret[ i ][ j ] = im_( i, j );
           }
      }
+     nir_log::info( "End im" );
      return ret;
 }
 vecImg nir_dft::re() const
 {
+     nir_log::info( "Start re" );
      vecImg ret = img_;
      for( int i = 0; i < img_.size(); i++ )
      {
@@ -99,10 +111,12 @@ vecImg nir_dft::re() const
                ret[ i ][ j ] = re_( i, j );
           }
      }
+     nir_log::info( "End re" );
      return ret;
 }
 vecImg nir_dft::complex() const
 {
+     nir_log::info( "Start complex" );
      vecImg ret( img_ );
      int pos = 0;
      for( int i = 0; i < img_.size(); i++ )
@@ -119,19 +133,24 @@ vecImg nir_dft::complex() const
           }
           pos = 0;
      }
+     nir_log::info( "End complex" );
      return ret;
 }
 vecImg nir_dft::do_dft() const
 {
+     nir_log::info( "Start do_dft" );
      vecImg ret = complex();
      for( auto& v : ret )
      {
           v.resize( v.size() / 2 );
      }
+     nir_log::info( "End do_dft" );
      return ret;
 }
-vecImg nir_dft::do_dft( vecImg phase_, vecImg ampl_, vecImg im ) const
+vecImg nir_dft::do_dft( const vecImg& phase_, const vecImg& ampl_, const vecImg& im ) const
 {
+     nir_log::info( "Start do_dft with params" );
+
      bool minus = false;
      vecImg ret = phase_;
      for( int i = 0; i < ret.size(); i++ )
@@ -189,5 +208,7 @@ vecImg nir_dft::do_dft( vecImg phase_, vecImg ampl_, vecImg im ) const
                }
           }
      }
+     nir_log::info( "End do_dft with params" );
+
      return ret;
 }

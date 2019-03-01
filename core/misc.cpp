@@ -44,4 +44,11 @@ void vecToMat( const std::vector<std::vector<float> >& im, const std::vector<std
           }
      }
 }
+
+float count_area_width( float message_length, float blocks_count )
+{
+     float ret = ( M_PI * message_length ) / ( 44 * blocks_count );
+     std::cout << "Area width( epsilon ) = " << ret << std::endl;
+     return ret > M_PI / 2 ? -1 : ret;
+}
 } // namespace nir_misc
