@@ -87,9 +87,10 @@ void test_vec()
      nir_dft img = nir_dft( img_v );
 
      const int k = 1; // todo сделать подсчет блоков в пикче
-     const std::string message = "011111000011101";
+     std::vector<float> message = { 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1 };
+                                  //0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0
      const int Acrit = 10; // todo fixme
-     const float area_width = nir_misc::count_area_width( message.length(), k );
+     const float area_width = nir_misc::count_area_width( message.size(), k );
      if( -1 == area_width )
      {
           nir_log::error( "area width < 0" );
@@ -114,6 +115,7 @@ void test_vec()
 
      std::cout << std::endl;
      std::cout << emb.get_clear_sequence_count() << std::endl;
+     std::cout << "Q = " << emb.calculate_quality_characteristics( message, test ) <<  std::endl;
 }
 
 void test()

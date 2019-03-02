@@ -93,13 +93,49 @@ int nir_embedding::calculate_overlay_options( const std::vector<std::vector<floa
      return ret;
 }
 
-// float calculate_quality_characteristics( const std::vector<float>& M, const std::vector<float>& F ) const
-// {
-//      nir_log::info( "Start calculate_quality_characteristics" );
-//      for( size_t i = 0; i < F.size() && i < M.size(); i++ )
-//      nir_log::info( "End calculate_quality_characteristics" );
-//      return ret;
-// }
+float nir_embedding::calculate_quality_characteristics( const std::vector<float>& M, const std::vector<float>& F ) const
+{
+     nir_log::info( "Start calculate_quality_characteristics" );
+     float s = 0;
+     int extra_i = 0;
+     float d = 0;
+     for( size_t i = 0; i + extra_i < F.size() && i < M.size(); ++i )
+     {
+          if( -1 == F[ i + extra_i ] )
+          {
+               ++extra_i;
+               --i;
+               continue;
+          }
+          if( F[ i + extra_i ] == M[ i ] )
+          {
+               ++s;
+               continue;
+          }
+          ++d;
+     }
+     nir_log::info( "End calculate_quality_characteristics" );
+     return ( s - d ) / ( s + d );
+}
+
+float calculate_different_placement( const std::vector<std::vector<float>>& clear_seq_matrix )
+{
+     float ret;
+     for( size_t i = 0; i < clear_seq_matrix.size(); ++i )
+     {
+          if( -1 != clear_seq_matrix[i][0] )
+          {
+               continue;
+          }
+          if( clear_seq_matrix[i].size() == 1 )
+          {
+               ++ret;
+               continue;
+          }
+     }
+}
+
+
 void nir_embedding::create_area_positions()
 {
      nir_log::info( "Start create_area_positions" );
