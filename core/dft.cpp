@@ -1,13 +1,38 @@
 #include "dft.h"
 #include "log.h"
+#include "misc.h"
 
 #include <math.h>
 #include <iostream>
+#include <string>
 
+static std::vector<std::vector<float> > rounding( std::vector<std::vector<float> > img )
+{
+     nir_log::info( "Start nir_dft rounding" );
+
+     int buf;
+     for( size_t i = 0; i < img.size(); ++i )
+     {
+          for( size_t j = 0; j < img.size(); ++j )
+          {
+               buf = img[ i ][ j ];
+               if( img[ i ][ j ] - (float)buf > 0.5 )
+               {
+                    ++buf;
+               }
+               img[ i ][ j ] = buf;
+          }
+     }
+     nir_log::info( "End nir_dft rounding" );
+
+     return img;
+}
 nir_dft::nir_dft( const vecImg& im )
-     : img_( im )
+     : img_( rounding( im ) )
+// : img_( rounding( im ) )
 {
      nir_log::info( "Start nir_dft constructor vec" );
+
      nir_log::info( "End nir_dft constructor vec" );
 }
 
@@ -33,7 +58,7 @@ float nir_dft::re_( const float x, const float y ) const
      {
           for( int j = 0; j < img_.size(); j++ )
           {
-               ans += img_[ i ][ j ] * cosf32( -1 * ( i * x / img_.size() + j * y / img_.size() ) * M_PI * 2 );
+               ans += img_[ i ][ j ] * cos( -1 * ( i * x / img_.size() + j * y / img_.size() ) * M_PI * 2 );
           }
      }
      return ans / 64;
@@ -46,7 +71,7 @@ float nir_dft::im_( const float x, const float y ) const
      {
           for( int j = 0; j < img_.size(); j++ )
           {
-               ans += img_[ i ][ j ] * sinf32( -1 * ( i * x / img_.size() + j * y / img_.size() ) * M_PI * 2 );
+               ans += img_[ i ][ j ] * sin( -1 * ( i * x / img_.size() + j * y / img_.size() ) * M_PI * 2 );
           }
      }
      return ans / 64;
@@ -147,18 +172,17 @@ vecImg nir_dft::do_dft() const
      nir_log::info( "End do_dft" );
      return ret;
 }
-vecImg nir_dft::do_dft( const vecImg& phase_, const vecImg& ampl_, const vecImg& im ) const
+vecImg nir_dft::do_dft( const vecImg& phase, const vecImg& ampl, const vecImg& im )
 {
      nir_log::info( "Start do_dft with params" );
-
      bool minus = false;
-     vecImg ret = phase_;
+     vecImg ret = phase;
      for( int i = 0; i < ret.size(); i++ )
      {
           for( int j = 0; j < ret.size(); j++ )
           {
-               if( ( 0 > phase_[ i ][ j ] && 0 < im[ i ][ j ] ) ||
-                   ( 0 < phase_[ i ][ j ] && 0 > im[ i ][ j ] ) )
+               if( ( 0 > phase[ i ][ j ] && 0 < im[ i ][ j ] ) ||
+                   ( 0 < phase[ i ][ j ] && 0 > im[ i ][ j ] ) )
                {
                     minus = true;
                }
@@ -169,19 +193,19 @@ vecImg nir_dft::do_dft( const vecImg& phase_, const vecImg& ampl_, const vecImg&
                switch( j )
                {
                     case 0:
-                         ret[ i ][ j ] = ampl_[ i ][ j ] * cos( phase_[ i ][ j ] );
+                         ret[ i ][ j ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
                          break;
 
                     case 1:
-                         ret[ i ][ 2 ] = ampl_[ i ][ j ] * cos( phase_[ i ][ j ] );
+                         ret[ i ][ 2 ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
                          break;
 
                     case 2:
-                         ret[ i ][ 4 ] = ampl_[ i ][ j ] * cos( phase_[ i ][ j ] );
+                         ret[ i ][ 4 ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
                          break;
 
                     case 3:
-                         ret[ i ][ 6 ] = ampl_[ i ][ j ] * cos( phase_[ i ][ j ] );
+                         ret[ i ][ 6 ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
                          break;
                }
                switch( j )

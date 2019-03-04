@@ -7,7 +7,11 @@ namespace nir_misc
 /*
      @brief function for print std::vector<std::vectro<float>>
 */
-void print_vec( std::vector<std::vector<float> > padded );
+
+void print_vec( const std::vector<std::vector<float> >& vec );
+
+template <class T>
+void printv( const std::vector<T>& vec );
 
 /*
      @brief function for print cv::Mat matrix
@@ -17,11 +21,15 @@ void print_Mat( cv::Mat padded );
 /*
      @brief: convert std::vector< std::vector<float> to cv::Mat
 */
-void vecToMat( const std::vector<std::vector<float> >& im, const std::vector<std::vector<float> >& re, cv::Mat& ret );
+void vecToMat( const std::vector<std::vector<float> >& img, const std::vector<std::vector<float> >& re, cv::Mat& ret  );
+std::vector<std::vector<float>> matTovec( cv::Mat& img );
 
 /*
      @brief: function for count 'epsilon'
      @ret: -1 if ret_value < pi/2 else 'epsilon'
 */
 float count_area_width( float message_length, float blocks_count );
+
+float calculate_psnr( std::vector<std::vector<float> >& prev_img, std::vector<std::vector<float> >& modified_img );
+
 } // namespace nir_misc
