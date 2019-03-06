@@ -15,6 +15,7 @@ public:
      vecImg re() const;
      vecImg complex() const;
      vecImg do_dft() const;
+     static vecImg do_dft( const vecImg& phase, const vecImg& ampl );
      static vecImg do_dft( const vecImg& phase, const vecImg& ampl, const vecImg& im );
      vecImg get_img() const
      {

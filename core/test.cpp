@@ -318,7 +318,7 @@ void test_vec()
      // {
      //      int s;
      //      std::cin >>s;
-     emb.do_test_embedded( test, x_vec );
+     emb.do_test_embedded( test, { -1, 0,1,1,-1,1,1,1,0,-1,0,-1,-1,-1,0,0,1,1,1,-1,0,1} );
      // }
      // }
 }

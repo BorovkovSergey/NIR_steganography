@@ -38,6 +38,6 @@ void warning( const std::string& message )
 }
 void info( const std::string& message )
 {
-     std::cout << FGRN( "Info......: " ) << message << std::endl;
+    // std::cout << FGRN( "Info......: " ) << message << std::endl;
 }
 } // namespace nir_log

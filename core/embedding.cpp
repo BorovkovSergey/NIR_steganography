@@ -45,7 +45,7 @@ std::vector<float> count_new_auxiliary_sequence( const std::vector<std::vector<f
 {
      nir_dft img = nir_dft( inverseTransform );
      std::cout << "1111111111111111111111111111111111111111111" << std::endl;
-     nir_misc::print_vec( img.get_img() );
+     nir_misc::print_vec( img.calc_phase( img.im(), img.re() ) );
 
      nir_embedding emb = nir_embedding( img.get_img(), img.calc_phase( img.im(), img.re() ), img.calc_amp( img.im(), img.re() ), img.im(), img.re() );
      std::vector<float> test = emb.count_auxiliary_sequence( 1 ); // todo fixme 1
@@ -219,12 +219,34 @@ std::vector<std::vector<float> > nir_embedding::embedded_new_values_in_phase_mat
 {
      for( size_t i = 0; i < area_positions_.size(); ++i )
      {
+         if ( new_values[i] == -1 )
+         {
+             continue;
+         }
           img[ area_positions_[ i ].second ][ area_positions_[ i ].first ] = new_values[ i ];
      }
      return img;
 }
 //std::vector<float> nir_embedding::do_test_embedded( const std::vector<float>& prev, const std::vector<float>& input, int a, int b )
 
+std::vector<std::vector<float> > do_new_re( std::vector<std::vector<float> > phase, std::vector<std::vector<float> > ampl )
+{
+     // todo сравнение размеров ре и фейз
+     if( ampl.size() != phase.size() )
+     {
+         nir_log::warning("ampl.size() != phase.size() inf func do_new_re ");
+     }
+     std::vector<std::vector<float> > ret;
+     for( size_t i = 0; i < ampl.size() && i < phase.size(); ++i )
+     {
+          ret.push_back( std::vector<float>() );
+          for( size_t j = 0; j < ampl.size() && j < phase.size(); ++j )
+          {
+               ret[i].push_back( ampl[ i ][ j ] * cos(phase[ i ][ j ]) );
+          }
+     }
+     return ret;
+}
 std::vector<float> nir_embedding::do_test_embedded( const std::vector<float>& prev, const std::vector<float>& input )
 {
      nir_log::info( "Start do_test_embedded" );
@@ -236,11 +258,11 @@ std::vector<float> nir_embedding::do_test_embedded( const std::vector<float>& pr
      }
      for( size_t i = 0; i < prev.size() && i < input.size(); ++i )
      {
-        //   if( prev[ i ] == input[ i ] )
-        //   {
-        //        ret.push_back( phase_[ area_positions_[ i ].second ][ area_positions_[ i ].first ] );
-        //        continue;
-        //   }
+          //   if( prev[ i ] == input[ i ] )
+          //   {
+          //        ret.push_back( phase_[ area_positions_[ i ].second ][ area_positions_[ i ].first ] );
+          //        continue;
+          //   }
           if( input[ i ] == 0 )
           {
                ret.push_back( -M_PI_2 );
@@ -251,18 +273,30 @@ std::vector<float> nir_embedding::do_test_embedded( const std::vector<float>& pr
                ret.push_back( M_PI_2 );
                continue;
           }
-          ret.push_back( phase_[ area_positions_[ i ].second ][ area_positions_[ i ].first ]);//[ i % 7 ][ 3 + i % 3 ] );
+          ret.push_back(-1);
+          //   ret.push_back( phase_[ area_positions_[ a ].second ][ area_positions_[ b ].first ]);//[ i % 7 ][ 3 + i % 3 ] );
      }
      std::cout << "ret" << std::endl;
      nir_misc::printv( ret );
      cv::Mat embedded_img;
-     nir_misc::print_vec( embedded_new_values_in_phase_matrix( ret, phase_ ) );
+     nir_misc::print_vec( do_new_re( embedded_new_values_in_phase_matrix( ret, phase_ ) , ampl_ ));
+     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";
+     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";
+     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";
 
-     nir_misc::vecToMat( nir_dft::do_dft( embedded_new_values_in_phase_matrix( ret, phase_ ), ampl_, im_ ), re_, embedded_img );
+     nir_misc::print_vec(  embedded_new_values_in_phase_matrix( ret, phase_ ) );
+     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";
+     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";
+     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";
+     std::cout << "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS\n";
+
+     nir_misc::vecToMat( nir_dft::do_dft( embedded_new_values_in_phase_matrix( ret, phase_ ), ampl_ ), do_new_re( embedded_new_values_in_phase_matrix( ret, phase_ ), ampl_), embedded_img );
      cv::Mat inverseTransform;
      cv::dft( embedded_img, inverseTransform, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT );
+     std::cout << "print invers trans\n";
+     nir_misc::print_Mat(inverseTransform);
      std::cout << "new dft " << std::endl;
-     nir_misc::print_vec( nir_dft::do_dft( embedded_new_values_in_phase_matrix( ret, phase_ ), ampl_, im_ ) );
+    nir_misc::print_vec( nir_dft::do_dft( embedded_new_values_in_phase_matrix( ret, phase_ ), ampl_ ) );
      nir_log::info( "End do_test_embedded" );
      return count_new_auxiliary_sequence( nir_misc::matTovec( inverseTransform ) );
 }

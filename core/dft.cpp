@@ -9,7 +9,6 @@
 static std::vector<std::vector<float> > rounding( std::vector<std::vector<float> > img )
 {
      nir_log::info( "Start nir_dft rounding" );
-
      int buf;
      for( size_t i = 0; i < img.size(); ++i )
      {
@@ -24,15 +23,12 @@ static std::vector<std::vector<float> > rounding( std::vector<std::vector<float>
           }
      }
      nir_log::info( "End nir_dft rounding" );
-
      return img;
 }
 nir_dft::nir_dft( const vecImg& im )
      : img_( rounding( im ) )
-// : img_( rounding( im ) )
 {
      nir_log::info( "Start nir_dft constructor vec" );
-
      nir_log::info( "End nir_dft constructor vec" );
 }
 
@@ -40,7 +36,6 @@ nir_dft::nir_dft( const cv::Mat& im )
      : img_( im.rows )
 {
      nir_log::info( "Start nir_dft constructor Mat" );
-
      for( unsigned int i = 0; i < im.rows; i++ )
      {
           for( unsigned j = 0; j < im.cols; j++ )
@@ -202,7 +197,7 @@ vecImg nir_dft::do_dft( const vecImg& phase, const vecImg& ampl, const vecImg& i
 
                     case 2:
                          ret[ i ][ 4 ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
-                         break;
+                             break;
 
                     case 3:
                          ret[ i ][ 6 ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
@@ -230,6 +225,70 @@ vecImg nir_dft::do_dft( const vecImg& phase, const vecImg& ampl, const vecImg& i
                {
                     ret[ i ][ j ] = -ret[ i ][ j ];
                }
+          }
+     }
+     nir_log::info( "End do_dft with params" );
+
+     return ret;
+}
+vecImg nir_dft::do_dft( const vecImg& phase, const vecImg& ampl )
+{
+     nir_log::info( "Start do_dft with params" );
+     bool minus = false;
+     vecImg ret = phase;
+     for( int i = 0; i < ret.size(); i++ )
+     {
+          for( int j = 0; j < ret.size(); j++ )
+          {
+            //    if( ( 0 > phase[ i ][ j ] && 0 < im[ i ][ j ] ) ||
+            //        ( 0 < phase[ i ][ j ] && 0 > im[ i ][ j ] ) )
+            //    {
+            //         minus = true;
+            //    }
+            //    else
+            //    {
+            //         minus = false;
+            //    }
+               switch( j )
+               {
+                    case 0:
+                         ret[ i ][ j ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
+                         break;
+
+                    case 1:
+                         ret[ i ][ 2 ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
+                         break;
+
+                    case 2:
+                         ret[ i ][ 4 ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
+                             break;
+
+                    case 3:
+                         ret[ i ][ 6 ] = ampl[ i ][ j ] * cos( phase[ i ][ j ] );
+                         break;
+               }
+               switch( j )
+               {
+                    case 0:
+                         ret[ i ][ 1 ] = ampl[ i ][ j ] * sin( phase[ i ][ j ] );
+                         break;
+
+                    case 1:
+                         ret[ i ][ 3 ] = ampl[ i ][ j ] * sin( phase[ i ][ j ] );
+                         break;
+
+                    case 2:
+                         ret[ i ][ 5 ] = ampl[ i ][ j ] * sin( phase[ i ][ j ] );
+                         break;
+
+                    case 3:
+                         ret[ i ][ 7 ] = ampl[ i ][ j ] * sin( phase[ i ][ j ] );
+                         break;
+               }
+            //    if( minus )
+            //    {
+            //         ret[ i ][ j ] = -ret[ i ][ j ];
+            //    }
           }
      }
      nir_log::info( "End do_dft with params" );
