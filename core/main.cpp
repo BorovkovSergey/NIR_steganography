@@ -8,13 +8,12 @@
 #include "test.h"
 #include <vector>
 #include "log.h"
-
 int main()
 {
-          char* pic = "Lenna1.jpeg";
-      nir_test::test_vec();
-std::cout <<"\n\n\n";
-      nir_test::test();
+               char* pic = "Lenna1.jpeg";
+           nir_test::test_vec();
+     std::cout <<"\n\n\n";
+           nir_test::test();
 
      return 0;
 }

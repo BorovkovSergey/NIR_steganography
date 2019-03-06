@@ -42,9 +42,8 @@ void printv( const std::vector<T>& vec )
 {
      for( auto it : vec )
      {
-          std::string qw =  std::to_string(it);
           std::cout.width( cout_width_count );
-          std::cout << qw;
+          std::cout << std::to_string(it);
      }
      std::cout << std::endl;
 }

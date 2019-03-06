@@ -81,10 +81,10 @@ vecImg nir_dft::calc_phase( const vecImg& im, const vecImg& re ) const
           {
                if( ( i > 4 || j > 4 ) && ( i < 1 || i > 3 ) )
                {
-                    ret[ i ][ j ] = -atan2f32( im[ ( 8 - i ) % 8 ][ ( 8 - j ) % 8 ], re[ ( 8 - i ) % 8 ][ ( 8 - j ) % 8 ] );
+                    ret[ i ][ j ] = -atan2( im[ ( 8 - i ) % 8 ][ ( 8 - j ) % 8 ], re[ ( 8 - i ) % 8 ][ ( 8 - j ) % 8 ] );
                     continue;
                }
-               ret[ i ][ j ] = atan2f32( im[ i ][ j ], re[ i ][ j ] );
+               ret[ i ][ j ] = atan2( im[ i ][ j ], re[ i ][ j ] );
           }
      }
      nir_log::info( "End calc_phase" );
@@ -240,15 +240,6 @@ vecImg nir_dft::do_dft( const vecImg& phase, const vecImg& ampl )
      {
           for( int j = 0; j < ret.size(); j++ )
           {
-            //    if( ( 0 > phase[ i ][ j ] && 0 < im[ i ][ j ] ) ||
-            //        ( 0 < phase[ i ][ j ] && 0 > im[ i ][ j ] ) )
-            //    {
-            //         minus = true;
-            //    }
-            //    else
-            //    {
-            //         minus = false;
-            //    }
                switch( j )
                {
                     case 0:
@@ -285,10 +276,6 @@ vecImg nir_dft::do_dft( const vecImg& phase, const vecImg& ampl )
                          ret[ i ][ 7 ] = ampl[ i ][ j ] * sin( phase[ i ][ j ] );
                          break;
                }
-            //    if( minus )
-            //    {
-            //         ret[ i ][ j ] = -ret[ i ][ j ];
-            //    }
           }
      }
      nir_log::info( "End do_dft with params" );

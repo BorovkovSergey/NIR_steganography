@@ -305,21 +305,21 @@ void test_vec()
      std::cout << "Амп " << std::endl;
      nir_misc::print_vec( img.calc_amp( img.im(), img.re() ) );
 
-     std::vector<float> test = emb.count_auxiliary_sequence( 1 );
+     std::vector<float> test = emb.count_auxiliary_sequence( area_width );
      std::cout << "вектор 1 -1 0 исходный" << std::endl;
      nir_misc::printv( test );
 
-     std::vector<float> x_vec = emb.find_best_embedding( test, message );
+    std::vector<float> x_vec = emb.find_best_embedding( test, message );
      std::cout << "вектор 1 -1 0 сообщение" << std::endl;
      nir_misc::printv( x_vec );
-     //      for( int i = 0 ; i < 8 ; ++i)
-     // {
-     //           for( int j = 0 ; j < 8 ; ++j)
-     // {
-     //      int s;
-     //      std::cin >>s;
+    //       for( int i = 0 ; i < 8 ; ++i)
+    //  {
+    //            for( int j = 0 ; j < 8 ; ++j)
+    //  {
+    //       int s;
+    //       std::cin >>s;
      emb.do_test_embedded( test, { -1, 0,1,1,-1,1,1,1,0,-1,0,-1,-1,-1,0,0,1,1,1,-1,0,1} );
-     // }
-     // }
+    //  }
+    //  }
 }
 } // namespace nir_test
