@@ -79,7 +79,7 @@ vecImg nir_dft::calc_phase( const vecImg& im, const vecImg& re ) const
      {
           for( int i = 0; i < re.size(); i++ )
           {
-               if( ( i > 4 || j > 4 ) && ( i < 1 || i > 3 ) )
+               if( ( i >= 4 || j >= 4 ) && ( i < 1 || i > 3 ) )
                {
                     ret[ i ][ j ] = -atan2( im[ ( 8 - i ) % 8 ][ ( 8 - j ) % 8 ], re[ ( 8 - i ) % 8 ][ ( 8 - j ) % 8 ] );
                     continue;

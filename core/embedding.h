@@ -76,6 +76,8 @@ public:
      std::vector<std::vector<float> > embedded_new_values_in_phase_matrix( const std::vector<float>& new_values, std::vector<std::vector<float> > img );
     //  std::vector<float> it_embedded( std::vector<float> ret, const std::vector<float>& input);
 
+     float average_count_;
+
 private:
      void get_average_count();
      void create_area_positions();
@@ -83,7 +85,6 @@ protected:
      std::vector<std::pair<int, int> > area_positions_;
      std::vector<std::vector<float> > phase_;
      int clear_sequence_count_;
-     float average_count_;
      std::vector<std::vector<float> > img_;
      std::vector<std::vector<float> > ampl_;
      std::vector<std::vector<float> > im_;

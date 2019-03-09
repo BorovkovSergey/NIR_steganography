@@ -33,26 +33,33 @@ std::vector<std::vector<float> > rounding( std::vector<std::vector<float> > img 
      {
           for( size_t j = 0; j < img.size(); ++j )
           {
-               img[ i ][ j ] *= 1000;
+               img[ i ][ j ] *= 10000;
                buf = img[ i ][ j ];
                if( buf % 10 >= 5 || buf % 10 <= -5 )
                {
+                    if( buf % 10 >= 5 || buf % 10 <= -5 )
+                    {
+                         buf /= 10;
+                         if( buf < 0 )
+                         {
+                              --buf;
+                         }
+                         else
+                         {
+                              ++buf;
+                         }
+                         img[ i ][ j ] = buf;
+                         img[ i ][ j ] /= 1000;
+                         continue;
+                    }
                     buf /= 10;
-                    if( buf < 0 )
-                    {
-                         --buf;
-                    }
-                    else
-                    {
-                         ++buf;
-                    }
                     img[ i ][ j ] = buf;
-                    img[ i ][ j ] /= 100;
+                    img[ i ][ j ] /= 1000;
                     continue;
                }
                buf /= 10;
                img[ i ][ j ] = buf;
-               img[ i ][ j ] /= 100;
+               img[ i ][ j ] /= 1000;
           }
      }
      nir_log::info( "End nir_dft rounding" );
@@ -96,6 +103,8 @@ std::pair<std::vector<float>, std::vector<std::vector<float> > > count_new_auxil
 {
      std::pair<std::vector<float>, std::vector<std::vector<float> > > ret;
      nir_dft img = nir_dft( inverseTransform );
+     std::cout << "NEW_MAT\n";
+     nir_misc::print_vec( img.get_img() );
      nir_embedding emb = nir_embedding( img.get_img(), img.calc_phase( img.im(), img.re() ), img.calc_amp( img.im(), img.re() ), img.im(), img.re() );
      ret.first = emb.count_auxiliary_sequence( 1.1424 ); // todo fixme 1
      ret.second = img.calc_phase( img.im(), img.re() );
@@ -275,10 +284,10 @@ std::vector<std::vector<float> > nir_embedding::embedded_new_values_in_phase_mat
 {
      for( size_t i = 0; i < area_positions_.size(); ++i )
      {
-            if( new_values[ i ] == -1 )
-            {
-                 continue;
-            }
+          if( new_values[ i ] == -1 )
+          {
+               continue;
+          }
           img[ area_positions_[ i ].second ][ area_positions_[ i ].first ] = new_values[ i ];
      }
      return img;
@@ -303,6 +312,7 @@ std::vector<std::vector<float> > do_new_re( std::vector<std::vector<float> > pha
      }
      return ret;
 }
+
 std::vector<float> nir_embedding::do_test_embedded( const std::vector<float>& prev, const std::vector<float>& input )
 {
      nir_log::info( "Start do_test_embedded" );
@@ -314,11 +324,11 @@ std::vector<float> nir_embedding::do_test_embedded( const std::vector<float>& pr
      }
      for( size_t i = 0; i < prev.size() && i < input.size(); ++i )
      {
-        //   if( prev[ i ] == input[ i ] )
-        //   {
-        //        ret.push_back( phase_[ area_positions_[ i ].second ][ area_positions_[ i ].first ] );
-        //        continue;
-        //   }
+          //   if( prev[ i ] == input[ i ] )
+          //   {
+          //        ret.push_back( phase_[ area_positions_[ i ].second ][ area_positions_[ i ].first ] );
+          //        continue;
+          //   }
           if( input[ i ] == 0 )
           {
                ret.push_back( -M_PI_2 );
@@ -329,11 +339,15 @@ std::vector<float> nir_embedding::do_test_embedded( const std::vector<float>& pr
                ret.push_back( M_PI_2 );
                continue;
           }
-               ret.push_back( -1 );
+          ret.push_back( -1 );
           //ret.push_back( phase_[ i % 7 ][ 3 + i % 3 ] ); //[ area_positions_[ a ].second ][ area_positions_[ b ].first ]);//
      }
      std::vector<std::vector<float> > new_phase = rounding( embedded_new_values_in_phase_matrix( ret, phase_ ) );
-std::pair< std::vector<float>, std::vector<std::vector<float>>> buf;
+     std::cout << "OLD PHASE\n";
+     nir_misc::print_vec( phase_ );
+     std::cout << "NEW PHASE\n";
+     nir_misc::print_vec( new_phase );
+     std::pair<std::vector<float>, std::vector<std::vector<float> > > buf;
      for( unsigned int i = 0;; ++i )
      {
           cv::Mat embedded_img;
@@ -341,19 +355,20 @@ std::pair< std::vector<float>, std::vector<std::vector<float>>> buf;
           cv::Mat inverseTransform;
           cv::dft( embedded_img, inverseTransform, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT );
           buf = count_new_auxiliary_sequence( nir_misc::matTovec( inverseTransform ) );
-          if( match_sequences( input, buf.first ))
+          nir_misc::print_vec( buf.second );
+          std::cout << "\n";
+          if( match_sequences( input, buf.first ) )
           {
-              break;
+               break;
           }
-          nir_misc::print_vec( buf.second);
-          std::cout <<"\n";
-          nir_misc::printv( buf.first);
-          int a =0;
-          std::cin>>a;
+          nir_misc::printv( buf.first );
+
+          //   int a =0;
+          //   std::cin>>a;
           new_phase = rounding( embedded_new_values_in_phase_matrix( ret, buf.second ) );
      }
-     std::cout << "qwery\n"; 
-     nir_misc::printv(buf.first);
+     std::cout << "qwery\n";
+     nir_misc::printv( buf.first );
      nir_log::info( "End do_test_embedded" );
 
      return buf.first;
