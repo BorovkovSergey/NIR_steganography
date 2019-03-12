@@ -1,3 +1,4 @@
+#pragma once
 #include <utility>
 #include <vector>
 #include <iostream>
@@ -14,6 +15,11 @@ public:
      {
           out = phase;
      }
+          void get_img( cv::Mat& out )
+     {
+          out = img;
+     }
+
      float average_count;
      const float area_width;
      std::vector<float> auxiliary_sequence;

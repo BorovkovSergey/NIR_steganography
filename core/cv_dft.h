@@ -7,7 +7,7 @@ class nir_cv_dft
 public:
      nir_cv_dft( const cv::Mat& input );
 
-     static void do_dft( const cv::Mat& new_phase, const cv::Mat& amplitude, const cv::Mat& re, cv::Mat& out );
+     static void do_dft( const cv::Mat& new_phase, const cv::Mat& amplitude, cv::Mat& out );
 
      cv::Mat re;
      cv::Mat im;

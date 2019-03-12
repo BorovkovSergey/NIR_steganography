@@ -8,7 +8,7 @@
 
 static std::vector<std::vector<float> > rounding( std::vector<std::vector<float> > img )
 {
-     nir_log::info( "Start nir_dft rounding" );
+    //  nir_log::info( "Start nir_dft rounding" );
      int buf;
      for( size_t i = 0; i < img.size(); ++i )
      {
@@ -22,7 +22,7 @@ static std::vector<std::vector<float> > rounding( std::vector<std::vector<float>
                img[ i ][ j ] = buf;
           }
      }
-     nir_log::info( "End nir_dft rounding" );
+    //  nir_log::info( "End nir_dft rounding" );
      return img;
 }
 nir_dft::nir_dft( const vecImg& im )

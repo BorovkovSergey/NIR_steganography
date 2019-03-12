@@ -167,7 +167,7 @@ void nir_cv_dft::do_real()
      cv::dft( img, real, cv::DFT_SCALE | cv::DFT_REAL_OUTPUT );
 }
 
-void nir_cv_dft::do_dft( const cv::Mat& new_phase, const cv::Mat& amplitude, const cv::Mat& re, cv::Mat& out )
+void nir_cv_dft::do_dft( const cv::Mat& new_phase, const cv::Mat& amplitude, cv::Mat& out )
 {
      nir_log::info( "Start do_dft with params" );
      bool minus = false;
@@ -247,6 +247,5 @@ void nir_cv_dft::do_dft( const cv::Mat& new_phase, const cv::Mat& amplitude, con
                }
           }
      }
-     // ret.convertTo(out, 13);
      nir_log::info( "End do_dft with params" );
 }

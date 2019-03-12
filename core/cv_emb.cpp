@@ -119,18 +119,33 @@ std::vector<float> count_new_auxiliary_sequence( cv::Mat& inverseTransform, cv::
 bool match_sequences( std::vector<float> message, std::vector<float> modified_img )
 {
      //todo check size
-     std::vector<float> buf_modified_img;
+     if( message.size() != modified_img.size() )
+     {
+          nir_log::warning( "message.size() != modified_img.size() in function match_sequences" );
+     }
+     std::vector<float> buf_modified_img, buf_modified_msg;
      for( size_t i = 0; i < modified_img.size(); ++i )
      {
           if( modified_img[ i ] != -1 )
           {
                buf_modified_img.push_back( modified_img[ i ] );
           }
+          if( message[ i ] != -1 )
+          {
+               buf_modified_msg.push_back( message[ i ] );
+          }
      }
-     nir_misc::printv( message );
+     std::cout << std::endl;
+     std::cout << std::endl;
+
+     std::cout << "MATCH SEQUENCES" << std::endl;
+     nir_misc::printv( buf_modified_msg );
      std::cout << std::endl;
      nir_misc::printv( buf_modified_img );
-     return message == buf_modified_img ? true : false;
+     std::cout << std::endl;
+     std::cout << std::endl;
+
+     return buf_modified_msg == buf_modified_img ? true : false;
 }
 
 } // namespace
@@ -151,24 +166,23 @@ nir_cv_emb::nir_cv_emb( cv::Mat& input, const float& input_area_width, std::vect
      calculate_overlay_options();
      find_best_embedding();
      //  is_embedded = do_test_embedded( phase );
-     cv::Mat old_value;
-     while( 1 )
+     std::vector<cv::Mat> old_value;
+      do_test_embedded( new_img );
+     for (int i = 0; i < 100; ++i) // 1 )
      {
-          new_img.convertTo( old_value, CV_32F );
-          for( int i = 0; i < old_value.rows; ++i )
-          {
-               for( int j = 0; j < old_value.cols; ++j )
-               {
-                   if( old_value.at<float>(i,j) == old_value.at<float>(i,j) )
-                   {
-                       break;
-                   }
-               }
-          }
-          if( do_test_embedded( new_img ) )
-          {
-               break;
-          }
+         //  if ( std::find( old_value.begin(), old_value.end(), new_img ) != old_value.end() )
+         //  {
+         //      break;
+         //  }
+         old_value.push_back(new_img);
+         if (do_test_embedded(new_img))
+         {
+             std::cout << "FOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUUUUUUUUUUUUUNNNNNNNNNNNNNNNNNNNNNNNNNND\n\n\n\n\n\n"
+                       << std::endl;
+             break;
+         }
+                   int a;
+         std::cin >>a;
      }
 }
 
@@ -304,19 +318,22 @@ void nir_cv_emb::find_best_embedding()
           if( replacements_counter > buf_replacements_counter ||
               ( replacements_counter >= buf_replacements_counter && capacity < buf_capacity ) )
           {
-               replacements_counter = buf_replacements_counter;
-               capacity = buf_capacity;
-               //std::cout << "Try do_test_embedded: " << std::endl;
-               // nir_misc::printv(buf);
-               // if( do_test_embedded( prev_vec, buf ) == buf )
-               //{
                best_embedding = buf;
-               //   std::cout << "hello\n";
-               // break;
-               //   }
+            //    for( int i = 0; i < 100; ++i )
+            //    {
+            //         if( do_test_embedded( new_img ) )
+            //         {
+            //              std::cout << "FOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUUUUUUUUUUUUUNNNNNNNNNNNNNNNNNNNNNNNNNND\n\n\n\n\n\n"
+            //                        << std::endl;
+                         replacements_counter = buf_replacements_counter;
+                         capacity = buf_capacity;
+            //              break;
+            //         }
+            //    }
           }
           next_step( message, buf );
      }
+
      buf_replacements_counter = calculate_replacements( auxiliary_sequence, buf );
      if( replacements_counter > buf_replacements_counter )
      {
@@ -333,10 +350,10 @@ void nir_cv_emb::create_new_phase_matrix( const std::vector<float>& new_values )
 {
      for( size_t i = 0; i < area_positions.size(); ++i )
      {
-          // if (new_values[i] == -1)
-          // {
-          //      continue;
-          // }
+            if (new_values[i] == -1)
+            {
+                 continue;
+            }
           new_phase.at<float>( area_positions[ i ].first, area_positions[ i ].second ) = new_values[ i ];
      }
 }
@@ -382,22 +399,23 @@ bool nir_cv_emb::do_test_embedded( cv::Mat phase_to_input )
      std::cout << "     nir_misc::print_Mat( phase_to_input )" << std::endl;
      nir_misc::print_Mat( phase_to_input );
 
-     //   best_embedding = {-1, 0, 1, 1, -1, 1, 1, 1, 0, -1, 0, -1, -1, -1, 0, 0, 1, 1, 1, -1, 0, 1};
+     //    best_embedding = {-1, 0, 1, 1, -1, 1, 1, 1, 0, -1, 0, -1, -1, -1, 0, 0, 1, 1, 1, -1, 0, 1};
      //  best_embedding = {-1, 0, 1, 0, -1, 0, 0, 0, 0, -1, 1, -1, -1, -1, 0, 1, 0, 1, 1, -1, 0, 1};
      //   best_embedding = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
      //  best_embedding = { -1,0,1,1,-1,1,1,1,0,-1,0,-1,-1,-1,0,0,1,1,1,-1,0,1};
      std::vector<float> ret;
+     std::cout << " au " << auxiliary_sequence.size() << " be " << best_embedding.size() << std::endl;
      if( auxiliary_sequence.size() != best_embedding.size() )
      {
           nir_log::warning( "prev.size() != best_embedding.size() in function do_test_embedded" );
      }
      for( size_t i = 0; i < auxiliary_sequence.size() && i < best_embedding.size(); ++i )
      {
-          if( auxiliary_sequence[ i ] == best_embedding[ i ] )
-          {
-               ret.push_back( phase_to_input.at<float>( area_positions[ i ].second, area_positions[ i ].first ) );
-               continue;
-          }
+        //   if( auxiliary_sequence[ i ] == best_embedding[ i ] )
+        //   {
+        //        ret.push_back( phase_to_input.at<float>( area_positions[ i ].second, area_positions[ i ].first ) );
+        //        continue;
+        //   }
           if( best_embedding[ i ] == 0 )
           {
                ret.push_back( -M_PI_2 );
@@ -408,8 +426,8 @@ bool nir_cv_emb::do_test_embedded( cv::Mat phase_to_input )
                ret.push_back( M_PI_2 );
                continue;
           }
-          // ret.push_back(-1);
-          ret.push_back( phase_to_input.at<float>( area_positions[ i ].second, area_positions[ i ].first ) ); //[ area_positions_[ a ].second ][ area_positions_[ b ].first ]);//
+            ret.push_back(-1);
+        //   ret.push_back( phase_to_input.at<float>( area_positions[ i ].second, area_positions[ i ].first ) ); //[ area_positions_[ a ].second ][ area_positions_[ b ].first ]);//
      }
      create_new_phase_matrix( ret );
      std::cout << " best_embedding " << std::endl;
@@ -421,8 +439,7 @@ bool nir_cv_emb::do_test_embedded( cv::Mat phase_to_input )
      rounding( amp );
      rounding( new_phase );
      std::vector<float> buf;
-     do_new_re();
-     do_dft( new_phase, amp, re, new_dft );
+     do_dft( new_phase, amp, new_dft );
      do_idft( new_dft );
 
      buf = count_new_auxiliary_sequence( idft, new_img );
@@ -437,7 +454,7 @@ bool nir_cv_emb::do_test_embedded( cv::Mat phase_to_input )
      nir_misc::print_Mat( new_img );
 
      nir_log::info( "End do_test_embedded" );
-     return match_sequences( message, buf );
+     return match_sequences( best_embedding, buf );
 }
 
 void nir_cv_emb::create_area_positions()

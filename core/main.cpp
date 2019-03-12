@@ -8,7 +8,7 @@
 #include "test.h"
 #include <vector>
 #include "log.h"
-
+#include "cv_img.h"
 float re_( const std::vector<std::vector<float> >& img_, const float x, const float y )
 {
      float ans = 0;
@@ -43,7 +43,7 @@ float ire_( const std::vector<std::vector<float> >& img_, const float x, const f
      {
           for( int j = 0; j < img_.size(); j++ )
           {
-               ans += img_[ i ][ j ] * cos( ( ( i * x / (img_.size() + 1)) + ( j * y / (img_.size()+1)) ) * M_PI * 2 );
+               ans += img_[ i ][ j ] * cos( ( ( i * x / ( img_.size() + 1 ) ) + ( j * y / ( img_.size() + 1 ) ) ) * M_PI * 2 );
           }
      }
      return ans;
@@ -65,89 +65,116 @@ vecImg ire( const std::vector<std::vector<float> >& img_ )
 
 int main()
 {
-                    char* pic = "Lenna1.jpeg";
-            //    nir_test::test_vec();
-          std::cout <<"\n\n\n";
-                nir_test::test();
-    //  std::vector<std::vector<float> > img_v( 8 );
-    //  img_v[ 0 ].push_back( 131 );
-    //  img_v[ 0 ].push_back( 131 );
-    //  img_v[ 0 ].push_back( 129 );
-    //  img_v[ 0 ].push_back( 128 );
-    //  img_v[ 0 ].push_back( 132 );
-    //  img_v[ 0 ].push_back( 126 );
-    //  img_v[ 0 ].push_back( 129 );
-    //  img_v[ 0 ].push_back( 129 );
+     const std::string pic = "Lenna1.jpeg";
+     //   //    nir_test::test_vec();
+     // std::cout <<"\n\n\n";
+     //       // nir_test::test();
+     //       // nir_test::test_idft();
+     //       nir_test::test();
 
-    //  img_v[ 1 ].push_back( 135 );
-    //  img_v[ 1 ].push_back( 139 );
-    //  img_v[ 1 ].push_back( 136 );
-    //  img_v[ 1 ].push_back( 136 );
-    //  img_v[ 1 ].push_back( 141 );
-    //  img_v[ 1 ].push_back( 129 );
-    //  img_v[ 1 ].push_back( 130 );
-    //  img_v[ 1 ].push_back( 133 );
+     nir_cv_img img = nir_cv_img( pic );
+     // for( unsigned int i = 0; i < img.img.rows; ++i )
+     // {
+     //      for( unsigned int j = 0; j < img.img.cols; ++j )
+     //      {
+     //           buf.at<uchar>( i, j ) = img.img.at<uchar>( i, j );
+     //      }
+     // }
+     // buf.convertTo( buf, 0 );
 
-    //  img_v[ 2 ].push_back( 131 );
-    //  img_v[ 2 ].push_back( 133 );
-    //  img_v[ 2 ].push_back( 131 );
-    //  img_v[ 2 ].push_back( 128 );
-    //  img_v[ 2 ].push_back( 130 );
-    //  img_v[ 2 ].push_back( 134 );
-    //  img_v[ 2 ].push_back( 140 );
-    //  img_v[ 2 ].push_back( 134 );
-    //  img_v[ 3 ].push_back( 125 );
-    //  img_v[ 3 ].push_back( 126 );
-    //  img_v[ 3 ].push_back( 125 );
-    //  img_v[ 3 ].push_back( 120 );
-    //  img_v[ 3 ].push_back( 123 );
-    //  img_v[ 3 ].push_back( 124 );
-    //  img_v[ 3 ].push_back( 131 );
-    //  img_v[ 3 ].push_back( 124 );
-    //  img_v[ 4 ].push_back( 131 );
-    //  img_v[ 4 ].push_back( 129 );
-    //  img_v[ 4 ].push_back( 131 );
-    //  img_v[ 4 ].push_back( 121 );
-    //  img_v[ 4 ].push_back( 125 );
-    //  img_v[ 4 ].push_back( 124 );
-    //  img_v[ 4 ].push_back( 121 );
-    //  img_v[ 4 ].push_back( 122 );
-    //  img_v[ 5 ].push_back( 130 );
-    //  img_v[ 5 ].push_back( 128 );
-    //  img_v[ 5 ].push_back( 125 );
-    //  img_v[ 5 ].push_back( 119 );
-    //  img_v[ 5 ].push_back( 119 );
-    //  img_v[ 5 ].push_back( 120 );
-    //  img_v[ 5 ].push_back( 119 );
-    //  img_v[ 5 ].push_back( 122 );
-    //  img_v[ 6 ].push_back( 117 );
-    //  img_v[ 6 ].push_back( 125 );
-    //  img_v[ 6 ].push_back( 124 );
-    //  img_v[ 6 ].push_back( 122 );
-    //  img_v[ 6 ].push_back( 121 );
-    //  img_v[ 6 ].push_back( 116 );
-    //  img_v[ 6 ].push_back( 116 );
-    //  img_v[ 6 ].push_back( 114 );
-    //  img_v[ 7 ].push_back( 105 );
-    //  img_v[ 7 ].push_back( 113 );
-    //  img_v[ 7 ].push_back( 121 );
-    //  img_v[ 7 ].push_back( 120 );
-    //  img_v[ 7 ].push_back( 126 );
-    //  img_v[ 7 ].push_back( 120 );
-    //  img_v[ 7 ].push_back( 117 );
-    //  img_v[ 7 ].push_back( 111 );
+     imshow( "disp1lay", img.img );
+     cvWaitKey( 0 );
+     imshow( "display", img.out_img   );
+     cvWaitKey( 0 );
 
-    //  nir_misc::print_vec( re( img_v ) );
-    //  nir_misc::print_vec( ire( re( img_v ) ) );
-     
-    //  nir_dft dft = nir_dft(img_v);
-    //  dft.do_dft( dft.calc_phase( dft.im(), dft.re() ) , dft.calc_amp(dft.im(), dft.re() ));
-    //  cv::Mat ret;
-    //  cv::Mat idft;
-    //  nir_misc::vecToMat( dft.do_dft( dft.calc_phase( dft.im(), dft.re() ) , dft.calc_amp(dft.im(), dft.re() )), dft.re(), ret );
-    //  nir_misc::print_Mat( ret );
-    //  cv::dft( ret, idft, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT );
-    //  nir_misc::print_vec( img_v);
-    //  nir_misc::print_Mat( idft);
+     // cvWaitKey(0);
+
+     // for( auto it : img.vec_img )
+     // {
+     //      imshow( "dis2play", it );
+
+     //      cvWaitKey( 0 );
+     // }
+
+     //  std::vector<std::vector<float> > img_v( 8 );
+     //  img_v[ 0 ].push_back( 131 );
+     //  img_v[ 0 ].push_back( 131 );
+     //  img_v[ 0 ].push_back( 129 );
+     //  img_v[ 0 ].push_back( 128 );
+     //  img_v[ 0 ].push_back( 132 );
+     //  img_v[ 0 ].push_back( 126 );
+     //  img_v[ 0 ].push_back( 129 );
+     //  img_v[ 0 ].push_back( 129 );
+
+     //  img_v[ 1 ].push_back( 135 );
+     //  img_v[ 1 ].push_back( 139 );
+     //  img_v[ 1 ].push_back( 136 );
+     //  img_v[ 1 ].push_back( 136 );
+     //  img_v[ 1 ].push_back( 141 );
+     //  img_v[ 1 ].push_back( 129 );
+     //  img_v[ 1 ].push_back( 130 );
+     //  img_v[ 1 ].push_back( 133 );
+
+     //  img_v[ 2 ].push_back( 131 );
+     //  img_v[ 2 ].push_back( 133 );
+     //  img_v[ 2 ].push_back( 131 );
+     //  img_v[ 2 ].push_back( 128 );
+     //  img_v[ 2 ].push_back( 130 );
+     //  img_v[ 2 ].push_back( 134 );
+     //  img_v[ 2 ].push_back( 140 );
+     //  img_v[ 2 ].push_back( 134 );
+     //  img_v[ 3 ].push_back( 125 );
+     //  img_v[ 3 ].push_back( 126 );
+     //  img_v[ 3 ].push_back( 125 );
+     //  img_v[ 3 ].push_back( 120 );
+     //  img_v[ 3 ].push_back( 123 );
+     //  img_v[ 3 ].push_back( 124 );
+     //  img_v[ 3 ].push_back( 131 );
+     //  img_v[ 3 ].push_back( 124 );
+     //  img_v[ 4 ].push_back( 131 );
+     //  img_v[ 4 ].push_back( 129 );
+     //  img_v[ 4 ].push_back( 131 );
+     //  img_v[ 4 ].push_back( 121 );
+     //  img_v[ 4 ].push_back( 125 );
+     //  img_v[ 4 ].push_back( 124 );
+     //  img_v[ 4 ].push_back( 121 );
+     //  img_v[ 4 ].push_back( 122 );
+     //  img_v[ 5 ].push_back( 130 );
+     //  img_v[ 5 ].push_back( 128 );
+     //  img_v[ 5 ].push_back( 125 );
+     //  img_v[ 5 ].push_back( 119 );
+     //  img_v[ 5 ].push_back( 119 );
+     //  img_v[ 5 ].push_back( 120 );
+     //  img_v[ 5 ].push_back( 119 );
+     //  img_v[ 5 ].push_back( 122 );
+     //  img_v[ 6 ].push_back( 117 );
+     //  img_v[ 6 ].push_back( 125 );
+     //  img_v[ 6 ].push_back( 124 );
+     //  img_v[ 6 ].push_back( 122 );
+     //  img_v[ 6 ].push_back( 121 );
+     //  img_v[ 6 ].push_back( 116 );
+     //  img_v[ 6 ].push_back( 116 );
+     //  img_v[ 6 ].push_back( 114 );
+     //  img_v[ 7 ].push_back( 105 );
+     //  img_v[ 7 ].push_back( 113 );
+     //  img_v[ 7 ].push_back( 121 );
+     //  img_v[ 7 ].push_back( 120 );
+     //  img_v[ 7 ].push_back( 126 );
+     //  img_v[ 7 ].push_back( 120 );
+     //  img_v[ 7 ].push_back( 117 );
+     //  img_v[ 7 ].push_back( 111 );
+
+     //  nir_misc::print_vec( re( img_v ) );
+     //  nir_misc::print_vec( ire( re( img_v ) ) );
+
+     //  nir_dft dft = nir_dft(img_v);
+     //  dft.do_dft( dft.calc_phase( dft.im(), dft.re() ) , dft.calc_amp(dft.im(), dft.re() ));
+     //  cv::Mat ret;
+     //  cv::Mat idft;
+     //  nir_misc::vecToMat( dft.do_dft( dft.calc_phase( dft.im(), dft.re() ) , dft.calc_amp(dft.im(), dft.re() )), dft.re(), ret );
+     //  nir_misc::print_Mat( ret );
+     //  cv::dft( ret, idft, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT );
+     //  nir_misc::print_vec( img_v);
+     //  nir_misc::print_Mat( idft);
      return 0;
 }
