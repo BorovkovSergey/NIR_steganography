@@ -149,7 +149,7 @@ bool match_sequences( std::vector<float> message, std::vector<float> modified_im
 }
 
 } // namespace
-nir_cv_emb::nir_cv_emb( cv::Mat& input, const float& input_area_width, std::vector<float>& input_message )
+nir_cv_emb::nir_cv_emb( cv::Mat& input, const float& input_area_width, const std::vector<float>& input_message )
      : nir_cv_dft( input ),
      area_positions( 22 ),
      average_count( 0 ),
@@ -307,7 +307,7 @@ void nir_cv_emb::find_best_embedding()
           buf.push_back( -1 );
      }
      std::vector<float> ret;
-     int capacity = INT_MAX;
+     capacity = INT_MAX;
      int replacements_counter = INT_MAX;
      int buf_replacements_counter = 0;
      int buf_capacity = 0;

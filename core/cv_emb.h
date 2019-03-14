@@ -8,7 +8,7 @@
 class nir_cv_emb : nir_cv_dft
 {
 public:
-     nir_cv_emb( cv::Mat& input, const float& input_area_width, std::vector<float>& input_message );
+     nir_cv_emb( cv::Mat& input, const float& input_area_width, const std::vector<float>& input_message );
      nir_cv_emb( cv::Mat& input, const float& input_area_width );
 
      void get_phase( cv::Mat& out )
@@ -24,6 +24,7 @@ public:
      const float area_width;
      std::vector<float> auxiliary_sequence;
      std::vector<std::pair<int, int> > area_positions;
+     int capacity;
      int clear_sequence_count;
      std::vector<std::vector<float> > clear_sequence;
      int overlay_options;

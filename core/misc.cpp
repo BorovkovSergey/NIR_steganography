@@ -122,4 +122,22 @@ float calculate_psnr( std::vector<std::vector<float> >& prev_img, std::vector<st
      nir_log::info( "End calculate_psnr" );
      return 20 * log10( find_max_img_elem( prev_img ) / calculate_rmse( prev_img, modified_img ) );
 }
+
+std::vector<float> string_to_vec_float( const std::string& message )
+{
+     std::vector<float> ret( message.length() );
+     std::string::size_type sz;
+     for( unsigned int i = 0; i < message.length(); ++i )
+     {
+          ret[i] = (float)message[i]  - 48;
+     }
+     return ret;
+}
+
+std::string preapare_substr( std::string& str, const int& size )
+{
+     std::string buf = str.substr(0,size);
+     str.erase(0,size);
+     return buf;
+}
 } // namespace nir_misc

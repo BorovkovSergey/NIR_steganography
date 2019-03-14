@@ -63,39 +63,20 @@ vecImg ire( const std::vector<std::vector<float> >& img_ )
      return ret;
 }
 
+
+// Message can't be const cuz will erase in prepare_substr!!!
 int main()
 {
      const std::string pic = "Lenna1.jpeg";
-     //   //    nir_test::test_vec();
-     // std::cout <<"\n\n\n";
-     //       // nir_test::test();
-     //       // nir_test::test_idft();
-     //       nir_test::test();
+     std::string s = "1234567890";
+     std::cout << nir_misc::preapare_substr(s, 5) << " " << s;
+     // nir_cv_img img = nir_cv_img( pic );
 
-     nir_cv_img img = nir_cv_img( pic );
-     // for( unsigned int i = 0; i < img.img.rows; ++i )
-     // {
-     //      for( unsigned int j = 0; j < img.img.cols; ++j )
-     //      {
-     //           buf.at<uchar>( i, j ) = img.img.at<uchar>( i, j );
-     //      }
-     // }
-     // buf.convertTo( buf, 0 );
-
-     imshow( "disp1lay", img.img );
-     cvWaitKey( 0 );
-     imshow( "display", img.out_img   );
-     cvWaitKey( 0 );
-
-     // cvWaitKey(0);
-
-     // for( auto it : img.vec_img )
-     // {
-     //      imshow( "dis2play", it );
-
-     //      cvWaitKey( 0 );
-     // }
-
+     // imshow( "disp1lay", img.img );
+     // cvWaitKey( 0 );
+     // imshow( "display", img.out_img );
+     // cvWaitKey( 0 );
+     //  nir_test::test();
      //  std::vector<std::vector<float> > img_v( 8 );
      //  img_v[ 0 ].push_back( 131 );
      //  img_v[ 0 ].push_back( 131 );
