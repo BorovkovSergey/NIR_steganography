@@ -35,5 +35,5 @@ float calculate_psnr( std::vector<std::vector<float> >& prev_img, std::vector<st
 std::vector<float> string_to_vec_float( const std::string& message );
  
 // dont forget that str will erase
-std::string preapare_substr( std::string& str, const int& size );
+std::string preapare_substr( const std::string& str, const int& size );
 } // namespace nir_misc

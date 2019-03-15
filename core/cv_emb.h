@@ -49,4 +49,5 @@ private:
      void create_new_phase_matrix( const std::vector<float>& new_values );
      bool do_test_embedded(  cv::Mat phase_to_input );
      void do_idft( cv::Mat& input );
+     float get_random_phase();
 };

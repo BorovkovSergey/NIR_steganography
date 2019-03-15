@@ -134,10 +134,8 @@ std::vector<float> string_to_vec_float( const std::string& message )
      return ret;
 }
 
-std::string preapare_substr( std::string& str, const int& size )
+std::string preapare_substr( const std::string& str, const int& size )
 {
-     std::string buf = str.substr(0,size);
-     str.erase(0,size);
-     return buf;
+     return str.substr(0,size);
 }
 } // namespace nir_misc

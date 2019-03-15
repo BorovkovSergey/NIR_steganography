@@ -9,69 +9,67 @@
 #include <vector>
 #include "log.h"
 #include "cv_img.h"
-float re_( const std::vector<std::vector<float> >& img_, const float x, const float y )
+float re_(const std::vector<std::vector<float>> &img_, const float x, const float y)
 {
      float ans = 0;
-     for( int i = 0; i < img_.size(); i++ )
+     for (int i = 0; i < img_.size(); i++)
      {
-          for( int j = 0; j < img_.size(); j++ )
+          for (int j = 0; j < img_.size(); j++)
           {
-               ans += img_[ i ][ j ] * cos( -1 * ( i * x / 8 + j * y / 8 ) * M_PI * 2 );
+               ans += img_[i][j] * cos(-1 * (i * x / 8 + j * y / 8) * M_PI * 2);
           }
      }
      return ans / 64;
 }
-vecImg re( const std::vector<std::vector<float> >& img_ )
+vecImg re(const std::vector<std::vector<float>> &img_)
 {
-     nir_log::info( "Start re" );
+     nir_log::info("Start re");
      vecImg ret = img_;
-     for( int i = 0; i < img_.size(); i++ )
+     for (int i = 0; i < img_.size(); i++)
      {
-          for( int j = 0; j < img_.size(); j++ )
+          for (int j = 0; j < img_.size(); j++)
           {
-               ret[ i ][ j ] = re_( img_, i, j );
+               ret[i][j] = re_(img_, i, j);
           }
      }
-     nir_log::info( "End re" );
+     nir_log::info("End re");
      return ret;
 }
 
-float ire_( const std::vector<std::vector<float> >& img_, const float x, const float y )
+float ire_(const std::vector<std::vector<float>> &img_, const float x, const float y)
 {
      float ans = 0;
-     for( int i = 0; i < img_.size(); i++ )
+     for (int i = 0; i < img_.size(); i++)
      {
-          for( int j = 0; j < img_.size(); j++ )
+          for (int j = 0; j < img_.size(); j++)
           {
-               ans += img_[ i ][ j ] * cos( ( ( i * x / ( img_.size() + 1 ) ) + ( j * y / ( img_.size() + 1 ) ) ) * M_PI * 2 );
+               ans += img_[i][j] * cos(((i * x / (img_.size() + 1)) + (j * y / (img_.size() + 1))) * M_PI * 2);
           }
      }
      return ans;
 }
-vecImg ire( const std::vector<std::vector<float> >& img_ )
+vecImg ire(const std::vector<std::vector<float>> &img_)
 {
-     nir_log::info( "Start re" );
+     nir_log::info("Start re");
      vecImg ret = img_;
-     for( int i = 0; i < img_.size(); i++ )
+     for (int i = 0; i < img_.size(); i++)
      {
-          for( int j = 0; j < img_.size(); j++ )
+          for (int j = 0; j < img_.size(); j++)
           {
-               ret[ i ][ j ] = ire_( img_, i, j );
+               ret[i][j] = ire_(img_, i, j);
           }
      }
-     nir_log::info( "End re" );
+     nir_log::info("End re");
      return ret;
 }
 
-
-// Message can't be const cuz will erase in prepare_substr!!!
 int main()
 {
-     const std::string pic = "Lenna1.jpeg";
-     std::string s = "1234567890";
-     std::cout << nir_misc::preapare_substr(s, 5) << " " << s;
+     // const std::string pic = "Lenna1.jpeg";
+     // std::string s = "1234567890";
+     // std::cout << nir_misc::preapare_substr(s, 5) << " " << s;
      // nir_cv_img img = nir_cv_img( pic );
-
+     nir_test::test();
      // imshow( "disp1lay", img.img );
      // cvWaitKey( 0 );
      // imshow( "display", img.out_img );

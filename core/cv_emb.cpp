@@ -5,6 +5,32 @@
 #include <algorithm>
 namespace
 {
+void count_auxiliary_sequence_todo_del( cv::Mat phase, float area_width, std::vector<std::pair<int, int> > area_positions )
+{
+     nir_log::info( "Start count_auxiliary_sequence" );
+     const float f0 = -M_PI_2;
+     const float f1 = M_PI_2;
+     std::vector<float> auxiliary_sequence;
+     for( size_t i = 0; i < area_positions.size(); ++i )
+     {
+          if( f0 - area_width < phase.at<float>( area_positions[ i ].first, area_positions[ i ].second ) &&
+              f0 + area_width > phase.at<float>( area_positions[ i ].first, area_positions[ i ].second ) )
+          {
+               auxiliary_sequence.push_back( 0 );
+               continue;
+          }
+          if( f1 - area_width < phase.at<float>( area_positions[ i ].first, area_positions[ i ].second ) &&
+              f1 + area_width > phase.at<float>( area_positions[ i ].first, area_positions[ i ].second ) )
+          {
+               auxiliary_sequence.push_back( 1 );
+               continue;
+          }
+          auxiliary_sequence.push_back( -1 );
+     }
+     nir_misc::printv( auxiliary_sequence );
+     nir_log::info( "End count_auxiliary_sequence" );
+}
+
 void rounding( cv::Mat& img )
 {
      nir_log::info( "Start nir_dft rounding" );
@@ -110,9 +136,13 @@ std::vector<float> count_new_auxiliary_sequence( cv::Mat& inverseTransform, cv::
      nir_cv_dft img = nir_cv_dft( inverseTransform );
      std::cout << "NEW_MAT\n";
      nir_misc::print_Mat( img.img );
+     nir_misc::print_Mat( img.phase );
+     nir_misc::print_Mat( img.dft );
+     nir_misc::print_Mat( img.amp );
      nir_cv_emb emb = nir_cv_emb( img.img, 1.1424 );
      img.img.convertTo( new_img, CV_32F );
      emb.get_phase( new_img );
+     nir_misc::printv( emb.auxiliary_sequence );
      return emb.auxiliary_sequence;
 }
 
@@ -167,22 +197,22 @@ nir_cv_emb::nir_cv_emb( cv::Mat& input, const float& input_area_width, const std
      find_best_embedding();
      //  is_embedded = do_test_embedded( phase );
      std::vector<cv::Mat> old_value;
-      do_test_embedded( new_img );
-     for (int i = 0; i < 100; ++i) // 1 )
+     //   do_test_embedded( new_img );
+     for( int i = 0; i < 100; ++i ) // 1 )
      {
-         //  if ( std::find( old_value.begin(), old_value.end(), new_img ) != old_value.end() )
-         //  {
-         //      break;
-         //  }
-         old_value.push_back(new_img);
-         if (do_test_embedded(new_img))
-         {
-             std::cout << "FOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUUUUUUUUUUUUUNNNNNNNNNNNNNNNNNNNNNNNNNND\n\n\n\n\n\n"
-                       << std::endl;
-             break;
-         }
-                   int a;
-         std::cin >>a;
+          //  if ( std::find( old_value.begin(), old_value.end(), new_img ) != old_value.end() )
+          //  {
+          //      break;
+          //  }
+          old_value.push_back( new_img );
+          if( do_test_embedded( new_img ) )
+          {
+               std::cout << "FOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUUUUUUUUUUUUUNNNNNNNNNNNNNNNNNNNNNNNNNND\n\n\n\n\n\n"
+                         << std::endl;
+               break;
+          }
+          int a;
+          std::cin >> a;
      }
 }
 
@@ -220,6 +250,7 @@ void nir_cv_emb::count_auxiliary_sequence()
                auxiliary_sequence.push_back( 0 );
                continue;
           }
+
           if( f1 - area_width < phase.at<float>( area_positions[ i ].first, area_positions[ i ].second ) &&
               f1 + area_width > phase.at<float>( area_positions[ i ].first, area_positions[ i ].second ) )
           {
@@ -319,17 +350,17 @@ void nir_cv_emb::find_best_embedding()
               ( replacements_counter >= buf_replacements_counter && capacity < buf_capacity ) )
           {
                best_embedding = buf;
-            //    for( int i = 0; i < 100; ++i )
-            //    {
-            //         if( do_test_embedded( new_img ) )
-            //         {
-            //              std::cout << "FOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUUUUUUUUUUUUUNNNNNNNNNNNNNNNNNNNNNNNNNND\n\n\n\n\n\n"
-            //                        << std::endl;
-                         replacements_counter = buf_replacements_counter;
-                         capacity = buf_capacity;
-            //              break;
-            //         }
-            //    }
+               //    for( int i = 0; i < 100; ++i )
+               //    {
+               //         if( do_test_embedded( new_img ) )
+               //         {
+               //              std::cout << "FOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUUUUUUUUUUUUUNNNNNNNNNNNNNNNNNNNNNNNNNND\n\n\n\n\n\n"
+               //                        << std::endl;
+               replacements_counter = buf_replacements_counter;
+               capacity = buf_capacity;
+               //              break;
+               //         }
+               //    }
           }
           next_step( message, buf );
      }
@@ -350,10 +381,6 @@ void nir_cv_emb::create_new_phase_matrix( const std::vector<float>& new_values )
 {
      for( size_t i = 0; i < area_positions.size(); ++i )
      {
-            if (new_values[i] == -1)
-            {
-                 continue;
-            }
           new_phase.at<float>( area_positions[ i ].first, area_positions[ i ].second ) = new_values[ i ];
      }
 }
@@ -370,6 +397,29 @@ void nir_cv_emb::do_new_re()
           for( size_t j = 0; j < amp.rows && j < new_phase.rows; ++j )
           {
                new_re.at<float>( i, j ) = ( amp.at<float>( i, j ) * cos( new_phase.at<float>( i, j ) ) );
+          }
+     }
+}
+float nir_cv_emb::get_random_phase()
+{
+     const float f0 = -M_PI_2;
+     const float f1 = M_PI_2;
+     for( size_t i = 0; i < phase.cols; ++i )
+     {
+          for( size_t j = 0; j < phase.rows; ++j )
+          {
+
+               if( f0 - area_width < phase.at<float>( i, j ) &&
+                   f0 + area_width > phase.at<float>( i, j ) )
+               {
+                    continue;
+               }
+               if( f1 - area_width < phase.at<float>( i, j ) &&
+                   f1 + area_width > phase.at<float>( i, j ) )
+               {
+                    continue;
+               }
+               return phase.at<float>( i, j );
           }
      }
 }
@@ -411,11 +461,11 @@ bool nir_cv_emb::do_test_embedded( cv::Mat phase_to_input )
      }
      for( size_t i = 0; i < auxiliary_sequence.size() && i < best_embedding.size(); ++i )
      {
-        //   if( auxiliary_sequence[ i ] == best_embedding[ i ] )
-        //   {
-        //        ret.push_back( phase_to_input.at<float>( area_positions[ i ].second, area_positions[ i ].first ) );
-        //        continue;
-        //   }
+          if( auxiliary_sequence[ i ] == best_embedding[ i ] )
+          {
+               ret.push_back( phase_to_input.at<float>( area_positions[ i ].first, area_positions[ i ].second ) );
+               continue;
+          }
           if( best_embedding[ i ] == 0 )
           {
                ret.push_back( -M_PI_2 );
@@ -426,8 +476,9 @@ bool nir_cv_emb::do_test_embedded( cv::Mat phase_to_input )
                ret.push_back( M_PI_2 );
                continue;
           }
-            ret.push_back(-1);
-        //   ret.push_back( phase_to_input.at<float>( area_positions[ i ].second, area_positions[ i ].first ) ); //[ area_positions_[ a ].second ][ area_positions_[ b ].first ]);//
+          // ret.push_back(-1);
+          ret.push_back( get_random_phase() );
+          //   ret.push_back( phase_to_input.at<float>( i % 8, 5 + i % 3 ) ); //[ area_positions_[ a ].second ][ area_positions_[ b ].first ]);//
      }
      create_new_phase_matrix( ret );
      std::cout << " best_embedding " << std::endl;
@@ -436,6 +487,7 @@ bool nir_cv_emb::do_test_embedded( cv::Mat phase_to_input )
      nir_misc::printv( ret );
      std::cout << " new phase " << std::endl;
      nir_misc::print_Mat( new_phase );
+     count_auxiliary_sequence_todo_del( new_phase, 1.1424, area_positions );
      rounding( amp );
      rounding( new_phase );
      std::vector<float> buf;
