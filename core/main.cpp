@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
+#include <bitset>
 #include <map>
 #include "misc.h"
 #include "dft.h"
@@ -9,151 +10,24 @@
 #include <vector>
 #include "log.h"
 #include "cv_img.h"
-float re_(const std::vector<std::vector<float>> &img_, const float x, const float y)
-{
-     float ans = 0;
-     for (int i = 0; i < img_.size(); i++)
-     {
-          for (int j = 0; j < img_.size(); j++)
-          {
-               ans += img_[i][j] * cos(-1 * (i * x / 8 + j * y / 8) * M_PI * 2);
-          }
-     }
-     return ans / 64;
-}
-vecImg re(const std::vector<std::vector<float>> &img_)
-{
-     nir_log::info("Start re");
-     vecImg ret = img_;
-     for (int i = 0; i < img_.size(); i++)
-     {
-          for (int j = 0; j < img_.size(); j++)
-          {
-               ret[i][j] = re_(img_, i, j);
-          }
-     }
-     nir_log::info("End re");
-     return ret;
-}
 
-float ire_(const std::vector<std::vector<float>> &img_, const float x, const float y)
-{
-     float ans = 0;
-     for (int i = 0; i < img_.size(); i++)
-     {
-          for (int j = 0; j < img_.size(); j++)
-          {
-               ans += img_[i][j] * cos(((i * x / (img_.size() + 1)) + (j * y / (img_.size() + 1))) * M_PI * 2);
-          }
-     }
-     return ans;
-}
-vecImg ire(const std::vector<std::vector<float>> &img_)
-{
-     nir_log::info("Start re");
-     vecImg ret = img_;
-     for (int i = 0; i < img_.size(); i++)
-     {
-          for (int j = 0; j < img_.size(); j++)
-          {
-               ret[i][j] = ire_(img_, i, j);
-          }
-     }
-     nir_log::info("End re");
-     return ret;
-}
+const std::string text = "London is the capital of Great Britain, its political, economic and cultural centre. It's one of the largest cities in the world. Its population is more than million people. London is situated on the river Thames. The city is very old and beautiful. It was founded more than two thousand years ago. Traditionally London is divided into several parts: the City, the West End, the East End and Westminster. The City is the oldest part of London, its financial and business centre. The heart of the City is the Stock Exchange. Westminster is the most important part of the capital. It's the administrative centre. The Houses of Parliament, the seat of the British Government, are there. It's a very beautiful building with two towers and a very big clock called Big Ben. Big Ben is really the bell which strikes every quarter of an hour. Opposite the Houses of Parliament is Westminster Abbey. It's a very beautiful church built over 900 years ago. The tombs of many great statesmen, scientists and writers are there. To the west of Westminster is West End. Here we find most of the big shops, hotels, museums, art galleries, theatres and concert halls. Picadilly Circus is the heart of London's West End. In the West End there are wide streets with beautiful houses and many parks, gardens and squares. To the east of Westminster is the East End, an industrial district of the capital. There are no parks or gardens in the East End and you can't see many fine houses there. Most of the plants and factories are situated there. London has many places of interest. One of them is Buckingham Palace. It's the residence of the Queen. The English are proud of Trafalgar Square, which was named so in memory of the victory at the battle. There in 1805 the English fleet defeated the fleet of France and Spain. The last place of interest I should like to mention, is the British Museum, the biggest museum in London. The museum is famous for its library -one of the richest in the world. All London's long-past history is told by its streets. There are many streets in London which are known all over the world. Among them Oxford Street, Downing Street and a lot of others can be mentioned. And tourists are usually attracted not only by the places of interest but by the streets too. In conclusion I should say if you are lucky enough to find yourself in London some day you will have a lot to see and enjoy there.";
 
 int main()
 {
-     // const std::string pic = "Lenna1.jpeg";
-     // std::string s = "1234567890";
-     // std::cout << nir_misc::preapare_substr(s, 5) << " " << s;
-     // nir_cv_img img = nir_cv_img( pic );
-     nir_test::test();
-     // imshow( "disp1lay", img.img );
-     // cvWaitKey( 0 );
-     // imshow( "display", img.out_img );
-     // cvWaitKey( 0 );
-     //  nir_test::test();
-     //  std::vector<std::vector<float> > img_v( 8 );
-     //  img_v[ 0 ].push_back( 131 );
-     //  img_v[ 0 ].push_back( 131 );
-     //  img_v[ 0 ].push_back( 129 );
-     //  img_v[ 0 ].push_back( 128 );
-     //  img_v[ 0 ].push_back( 132 );
-     //  img_v[ 0 ].push_back( 126 );
-     //  img_v[ 0 ].push_back( 129 );
-     //  img_v[ 0 ].push_back( 129 );
-
-     //  img_v[ 1 ].push_back( 135 );
-     //  img_v[ 1 ].push_back( 139 );
-     //  img_v[ 1 ].push_back( 136 );
-     //  img_v[ 1 ].push_back( 136 );
-     //  img_v[ 1 ].push_back( 141 );
-     //  img_v[ 1 ].push_back( 129 );
-     //  img_v[ 1 ].push_back( 130 );
-     //  img_v[ 1 ].push_back( 133 );
-
-     //  img_v[ 2 ].push_back( 131 );
-     //  img_v[ 2 ].push_back( 133 );
-     //  img_v[ 2 ].push_back( 131 );
-     //  img_v[ 2 ].push_back( 128 );
-     //  img_v[ 2 ].push_back( 130 );
-     //  img_v[ 2 ].push_back( 134 );
-     //  img_v[ 2 ].push_back( 140 );
-     //  img_v[ 2 ].push_back( 134 );
-     //  img_v[ 3 ].push_back( 125 );
-     //  img_v[ 3 ].push_back( 126 );
-     //  img_v[ 3 ].push_back( 125 );
-     //  img_v[ 3 ].push_back( 120 );
-     //  img_v[ 3 ].push_back( 123 );
-     //  img_v[ 3 ].push_back( 124 );
-     //  img_v[ 3 ].push_back( 131 );
-     //  img_v[ 3 ].push_back( 124 );
-     //  img_v[ 4 ].push_back( 131 );
-     //  img_v[ 4 ].push_back( 129 );
-     //  img_v[ 4 ].push_back( 131 );
-     //  img_v[ 4 ].push_back( 121 );
-     //  img_v[ 4 ].push_back( 125 );
-     //  img_v[ 4 ].push_back( 124 );
-     //  img_v[ 4 ].push_back( 121 );
-     //  img_v[ 4 ].push_back( 122 );
-     //  img_v[ 5 ].push_back( 130 );
-     //  img_v[ 5 ].push_back( 128 );
-     //  img_v[ 5 ].push_back( 125 );
-     //  img_v[ 5 ].push_back( 119 );
-     //  img_v[ 5 ].push_back( 119 );
-     //  img_v[ 5 ].push_back( 120 );
-     //  img_v[ 5 ].push_back( 119 );
-     //  img_v[ 5 ].push_back( 122 );
-     //  img_v[ 6 ].push_back( 117 );
-     //  img_v[ 6 ].push_back( 125 );
-     //  img_v[ 6 ].push_back( 124 );
-     //  img_v[ 6 ].push_back( 122 );
-     //  img_v[ 6 ].push_back( 121 );
-     //  img_v[ 6 ].push_back( 116 );
-     //  img_v[ 6 ].push_back( 116 );
-     //  img_v[ 6 ].push_back( 114 );
-     //  img_v[ 7 ].push_back( 105 );
-     //  img_v[ 7 ].push_back( 113 );
-     //  img_v[ 7 ].push_back( 121 );
-     //  img_v[ 7 ].push_back( 120 );
-     //  img_v[ 7 ].push_back( 126 );
-     //  img_v[ 7 ].push_back( 120 );
-     //  img_v[ 7 ].push_back( 117 );
-     //  img_v[ 7 ].push_back( 111 );
-
-     //  nir_misc::print_vec( re( img_v ) );
-     //  nir_misc::print_vec( ire( re( img_v ) ) );
-
-     //  nir_dft dft = nir_dft(img_v);
-     //  dft.do_dft( dft.calc_phase( dft.im(), dft.re() ) , dft.calc_amp(dft.im(), dft.re() ));
-     //  cv::Mat ret;
-     //  cv::Mat idft;
-     //  nir_misc::vecToMat( dft.do_dft( dft.calc_phase( dft.im(), dft.re() ) , dft.calc_amp(dft.im(), dft.re() )), dft.re(), ret );
-     //  nir_misc::print_Mat( ret );
-     //  cv::dft( ret, idft, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT );
-     //  nir_misc::print_vec( img_v);
-     //  nir_misc::print_Mat( idft);
+     const std::string pic = "lenna.jpeg";
+  //   std::string message = nir_misc::str_to_bits(text); // todo add message
+     std::vector<float> part_of_message;
+     nir_cv_img img = nir_cv_img( pic );
+    // const float area_width = nir_misc::count_area_width( message.length(), img.vec_img.size() );
+     //std::cout << message;
+     //std::cout << std::endl<<std::endl << area_width << std::endl;
+     // for( size_t i = 0; i < img.vec_img.size(); ++i )
+     // {
+     //      part_of_message = nir_misc::string_to_vec_float( nir_misc::preapare_substr( message, 22 ) );
+     //      nir_cv_emb emb = nir_cv_emb( img.vec_img[ i ], area_width, part_of_message );
+     //      message = message.erase( 0, emb.capacity );
+     //      img.vec_out[i] = emb.new_img;
+     // }
      return 0;
 }

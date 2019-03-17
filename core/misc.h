@@ -36,4 +36,6 @@ std::vector<float> string_to_vec_float( const std::string& message );
  
 // dont forget that str will erase
 std::string preapare_substr( const std::string& str, const int& size );
+
+std::string str_to_bits( const std::string& message );
 } // namespace nir_misc

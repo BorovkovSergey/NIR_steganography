@@ -1,6 +1,7 @@
 #include "misc.h"
 #include "log.h"
 
+#include <bitset>
 #include <string>
 #include <iostream>
 static int cout_width_count = 15;
@@ -138,4 +139,16 @@ std::string preapare_substr( const std::string& str, const int& size )
 {
      return str.substr(0,size);
 }
+
+std::string str_to_bits( const std::string& message )
+{
+     std::string ans;
+     for( auto it : message )
+     {
+          std::bitset<8> b(it);
+          ans += b.to_string();
+     }
+     return ans;
+}
+
 } // namespace nir_misc

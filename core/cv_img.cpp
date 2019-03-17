@@ -14,6 +14,8 @@ nir_cv_img::nir_cv_img( const std::string& input )
      out_img = cv::Mat( img.rows, img.cols, 0 );
      do_blocks();
      do_new_img();
+     cv::imshow("sss", out_img);
+     cv::waitKey(0);
 }
 
 void nir_cv_img::do_blocks()
@@ -28,7 +30,7 @@ void nir_cv_img::do_blocks()
      {
           for( unsigned int j = cols_range.first; j <= cols_range.second; ++j )
           {
-               if( i >= img.rows && j == img.cols - 1 )
+               if( i >= img.rows-1 && j == img.cols - 1 )
                {
                     vec_img.push_back( buf );
                     return;
@@ -73,7 +75,7 @@ void nir_cv_img::do_new_img()
      {
           for( unsigned int j = cols_range.first; j <= cols_range.second; ++j )
           {
-               if( i >= img.rows && j == img.cols - 1 )
+               if( i >= img.rows-1 && j == img.cols - 1 )
                {
                     std::cout << it << std::endl;
                     return;
