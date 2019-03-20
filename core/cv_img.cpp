@@ -14,8 +14,6 @@ nir_cv_img::nir_cv_img( const std::string& input )
      out_img = cv::Mat( img.rows, img.cols, 0 );
      do_blocks();
      do_new_img();
-     cv::imshow("sss", out_img);
-     cv::waitKey(0);
 }
 
 void nir_cv_img::do_blocks()
@@ -77,7 +75,6 @@ void nir_cv_img::do_new_img()
           {
                if( i >= img.rows-1 && j == img.cols - 1 )
                {
-                    std::cout << it << std::endl;
                     return;
                }
                out_img.at<uchar>( i, j ) = vec_img[ it ].at<uchar>( i % 8, j % 8 );
