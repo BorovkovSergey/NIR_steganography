@@ -99,9 +99,3 @@ void nir_cv_img::do_new_img()
           }
      }
 }
-
-void nir_cv_img::embedded_message( int& img_it, const float& area_width, const std::vector<float>& message )
-{
-     nir_cv_emb fImage = nir_cv_emb( vec_img[ img_it ], area_width, message );
-     vec_out[ img_it ] = fImage.new_img;
-}

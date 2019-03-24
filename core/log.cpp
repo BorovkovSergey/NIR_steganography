@@ -28,16 +28,22 @@ namespace nir_log
 {
 void error( const std::string& message )
 {
-     std::cout << FRED( "Error.....: " ) << message << std::endl;
-     print_file( "Error: " + message );
+     time_t t;
+     time( &t );
+     std::cout << FRED( "Error.....: " ) << message << std::endl
+               << ctime( &t ) << std::endl;
+     print_file( "Error: " + message + "\n" + ctime( &t ) );
 }
 void warning( const std::string& message )
 {
-     std::cout << FYEL( "Warning...: " ) << message << std::endl;
-     print_file( "Warning: " + message );
+     time_t t;
+     time( &t );
+     std::cout << FYEL( "Warning...: " ) << message << std::endl
+               << ctime( &t ) << std::endl;
+     print_file( "Warning: " + message + "\n" + ctime( &t ) );
 }
 void info( const std::string& message )
 {
-    std::cout << FGRN( "Info......: " ) << message << std::endl;
+ //    std::cout << FGRN( "Info......: " ) << message << std::endl;
 }
 } // namespace nir_log

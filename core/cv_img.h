@@ -12,7 +12,6 @@ public:
      cv::Mat out_img;
      std::vector<cv::Mat> vec_img;
      std::vector<cv::Mat> vec_out;
-     void embedded_message( int& img_it, const float& area_width, const std::vector<float>& message );
      void do_new_img();
 private:
      void do_blocks();

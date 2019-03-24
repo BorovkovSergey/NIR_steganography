@@ -11,10 +11,10 @@ void rounding( cv::Mat& img )
           for( size_t j = 0; j < img.rows; ++j )
           {
                buf = img.at<float>( i, j );
-               if( img.at<float>( i, j ) - (float)buf > 0.5 )
-               {
-                    ++buf;
-               }
+               // if( img.at<float>( i, j ) - (float)buf > 0.5 )
+               // {
+               //      ++buf;
+               // }
                img.at<float>( i, j ) = buf;
           }
      }

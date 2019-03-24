@@ -233,7 +233,7 @@ void test()
      // }
 
      // return;
-     nir_cv_emb fImage = nir_cv_emb( small_mat, area_width, message );
+     nir_cv_emb fImage = nir_cv_emb( small_mat, area_width, message , 3);
 
      // std::cout << fImage.get_average_count() << std::endl;
      nir_misc::printv( fImage.auxiliary_sequence );

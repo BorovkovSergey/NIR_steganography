@@ -8,7 +8,7 @@
 class nir_cv_emb : nir_cv_dft
 {
 public:
-     nir_cv_emb( cv::Mat& input, const float& input_area_width, const std::vector<float>& input_message );
+     nir_cv_emb( cv::Mat& input, const float& input_area_width, const std::vector<float>& input_message, int min_capacity_i );
      nir_cv_emb( cv::Mat& input, const float& input_area_width );
 
      void get_phase( cv::Mat& out )
@@ -31,12 +31,14 @@ public:
      float quality_characteristics;
      std::vector<float> message;
      std::vector<float> best_embedding;
+     std::vector<float> best_embedding_vec;
      cv::Mat new_re;
      cv::Mat new_phase;
      cv::Mat new_img;
      cv::Mat new_dft;
      cv::Mat idft;
      bool is_embedded;
+     int min_capacity;
 private:
      void create_area_positions();
      void get_average_count();
@@ -50,7 +52,6 @@ private:
      bool do_test_embedded(  cv::Mat phase_to_input );
      void do_idft( cv::Mat& input );
      float get_random_phase();
-     float get_random_phase( const unsigned int& flag );
      void processing_empty_block();
 
 };
