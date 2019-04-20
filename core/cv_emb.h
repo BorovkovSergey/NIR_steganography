@@ -54,4 +54,6 @@ private:
      float get_random_phase();
      void processing_empty_block();
 
+     int buf_capacity_;
+     cv::Mat idft_;
 };

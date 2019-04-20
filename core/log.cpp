@@ -40,7 +40,7 @@ void warning( const std::string& message )
      time( &t );
      std::cout << FYEL( "Warning...: " ) << message << std::endl
                << ctime( &t ) << std::endl;
-     print_file( "Warning: " + message + "\n" + ctime( &t ) );
+     //print_file( "Warning: " + message + "\n" + ctime( &t ) );
 }
 void info( const std::string& message )
 {

@@ -38,4 +38,7 @@ std::vector<float> string_to_vec_float( const std::string& message );
 std::string preapare_substr( const std::string& str, const int& size );
 
 std::string str_to_bits( const std::string& message );
+
+float calculate_mat_items_sum( cv::Mat in );
+void print_input_area( cv::Mat padded );
 } // namespace nir_misc

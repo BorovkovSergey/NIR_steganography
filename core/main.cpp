@@ -5,7 +5,6 @@
 #include <bitset>
 #include <map>
 #include "misc.h"
-#include "dft.h"
 #include "test.h"
 #include <vector>
 #include <cstdlib>
@@ -16,6 +15,8 @@ const std::string text_1 = "London is the capital of Great Britain, its politica
 const std::string text = text_1 + text_1 + text_1 + text_1 + text_1;
 int main()
 {
+     // nir_test::test();
+     // return 0;
      time_t t;
      time( &t );
      int min_cap = 5;

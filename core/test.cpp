@@ -6,8 +6,6 @@
 
 #include "test.h"
 #include "misc.h"
-#include "dft.h"
-#include "embedding.h"
 #include "log.h"
 #include "cv_dft.h"
 #include "cv_emb.h"
@@ -193,51 +191,9 @@ void test()
      //0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0
      const int Acrit = 10; // todo fixme
      const float area_width = nir_misc::count_area_width( message.size(), 1 );
-// nir_cv_emb idft = nir_cv_emb( small_mat, area_width, message);
-// cv::Mat out;
-// idft.get_img( out);
-// nir_misc::print_Mat( out);
-// idft.get_phase( out);
-// nir_misc::print_Mat( out);
-// return;}
-    //  const int k = 1; // todo сделать подсчет блоков в пикче
-    //  std::vector<float> message = {0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0};
-    //  //0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0
-    //  const int Acrit = 10; // todo fixme
-    //  const float area_width = nir_misc::count_area_width( message.size(), k );
 
-     // nir_cv_dft dft = nir_cv_dft(small_mat);
-     // cv::Mat newdft;
-     // nir_cv_dft::do_dft(dft.phase, dft.amp, dft.re, newdft);
-
-     // for (int i = 0; i < 16; i++)
-     // {
-     //     for (int j = 0; j < 16; j++)
-     //     {
-     //         std::cout.width(15);
-     //         std::cout << std::to_string(dft.re.at<float>(i, j));
-     //     }
-     //     std::cout << std::endl;
-     // }
-     // std::cout << std::endl
-     //           << std::endl
-     //           << std::endl;
-     // for (int i = 0; i < 16; i++)
-     // {
-     //     for (int j = 0; j < 16; j++)
-     //     {
-     //         std::cout.width(15);
-     //         std::cout << std::to_string(dft.dft.at<float>(i, j));
-     //     }
-     //     std::cout << std::endl;
-     // }
-
-     // return;
      nir_cv_emb fImage = nir_cv_emb( small_mat, area_width, message , 3);
 
-     // std::cout << fImage.get_average_count() << std::endl;
-     nir_misc::printv( fImage.auxiliary_sequence );
-     nir_misc::printv( fImage.best_embedding );
 }
 
 // void test_vec()
