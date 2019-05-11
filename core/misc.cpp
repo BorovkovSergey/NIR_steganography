@@ -91,7 +91,7 @@ namespace nir_misc
 template <class T>
 void printv( const std::vector<T>& vec )
 {
-     for( auto it : vec )
+     for( auto& it : vec )
      {
           std::cout.width( cout_width_count );
           std::cout << std::to_string(it);
@@ -102,7 +102,7 @@ void printv( const std::vector<T>& vec )
 void print_vec( const std::vector<std::vector<float> >& vec )
 {
      nir_log::info( "Start print_vec" );
-     for( auto it : vec )
+     for( auto& it : vec )
      {
           printv( it );
      }
@@ -143,7 +143,7 @@ void print_input_area( cv::Mat padded )
 
      std::vector<std::pair<int, int> > area_positions = create_ap();
      
-     for( auto it : area_positions) 
+     for( auto& it : area_positions) 
      {
                std::cout.width( cout_width_count );
                std::cout << std::to_string( padded.at<float>( it.first, it.second )) << " ";
@@ -219,7 +219,7 @@ std::string preapare_substr( const std::string& str, const int& size )
 std::string str_to_bits( const std::string& message )
 {
      std::string ans;
-     for( auto it : message )
+     for( auto& it : message )
      {
           std::bitset<8> b(it);
           ans += b.to_string();

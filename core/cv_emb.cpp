@@ -6,6 +6,46 @@
 #include <algorithm>
 namespace
 {
+int match_sequences( std::vector<float> message, std::vector<float> modified_img )
+{
+     //todo check size
+     if( message.size() != modified_img.size() )
+     {
+          nir_log::warning( "message.size() != modified_img.size() in function match_sequences" );
+     }
+     std::vector<float> buf_modified_img, buf_modified_msg;
+     for( size_t i = 0; i < modified_img.size(); ++i )
+     {
+          if( modified_img[ i ] != -1 )
+          {
+               buf_modified_img.push_back( modified_img[ i ] );
+          }
+          if( message[ i ] != -1 )
+          {
+               buf_modified_msg.push_back( message[ i ] );
+          }
+     }
+     if( buf_modified_img.size() > buf_modified_msg.size() )
+     {
+          nir_log::info( "buf_modified_img.size() > buf_modified_msg.size()" );
+          return -1;
+     }
+     for( size_t i = 0; i < buf_modified_img.size() && i < buf_modified_msg.size(); ++i )
+     {
+          if( buf_modified_img[ i ] != buf_modified_msg[ i ] )
+          {
+               return -1;
+          }
+     }
+     nir_misc::printv( buf_modified_img );
+     nir_misc::printv( buf_modified_msg );
+     if( buf_modified_img.size() < buf_modified_msg.size() )
+     {
+          return buf_modified_img.size();
+     }
+     return buf_modified_msg.size();
+}
+
 void new_count_auxiliary_sequence( const std::vector<std::pair<int, int> > area_positions, float area_width, cv::Mat phase )
 {
      nir_log::info( "Start count_auxiliary_sequence" );
@@ -133,7 +173,7 @@ std::vector<std::vector<float> > rounding( std::vector<std::vector<float> > img 
 void calculate_mat_items_dif( cv::Mat in, cv::Mat r_mat, std::vector<int>& rows_dif, std::vector<int>& cols_dif )
 {
      float ret1 = 0, ret2 = 0;
-    //  std::cout << "rows\n";
+     //  std::cout << "rows\n";
      for( unsigned int i = 0; i < in.cols; ++i )
      {
           for( unsigned j = 0; j < in.rows; ++j )
@@ -146,7 +186,7 @@ void calculate_mat_items_dif( cv::Mat in, cv::Mat r_mat, std::vector<int>& rows_
           ret1 = 0;
           ret2 = 0;
      }
-    //  std::cout << "cols\n";
+     //  std::cout << "cols\n";
      for( unsigned int i = 0; i < in.cols; ++i )
      {
           for( unsigned j = 0; j < in.rows; ++j )
@@ -165,7 +205,7 @@ void calculate_mat_items_dif( cv::Mat in, cv::Mat r_mat, std::vector<int>& rows_
 // крч смотрит разницу в колонках и строках и убирает ее
 void optimize_mat( cv::Mat& r_mat, std::vector<int>& rows_dif, std::vector<int>& cols_dif )
 {
-     for( int i = 0; i < cols_dif.size();++i)
+     for( int i = 0; i < cols_dif.size(); ++i )
      {
           if( cols_dif[ i ] < 0 )
           {
@@ -205,107 +245,48 @@ void optimize_mat( cv::Mat& r_mat, std::vector<int>& rows_dif, std::vector<int>&
           }
      }
 }
-std::vector<float> count_new_auxiliary_sequence( float area_width, cv::Mat& inverseTransform, cv::Mat& new_phase )
+std::vector<float> count_new_auxiliary_sequence( float area_width, const std::vector<float>& aux_seq, cv::Mat& inverseTransform, cv::Mat& new_phase )
 {
      std::vector<int> rows_dif;
      std::vector<int> cols_dif;
      nir_cv_dft img = nir_cv_dft( inverseTransform );
      cv::Mat new_mat;
      img.img.convertTo( new_mat, CV_32F );
-    //  std::cout << "after before" << nir_misc::calculate_mat_items_sum( img.img ) << std::endl;
 
-     calculate_mat_items_dif( inverseTransform, new_mat, rows_dif, cols_dif );
-    //  for( auto it : rows_dif )
-    //  {
-    //       std::cout << std::to_string( it ) << " ";
-    //  }
-    //  std::cout << std::endl;
-    //  for( auto it : cols_dif )
-    //  {
-    //       std::cout << std::to_string( it ) << " ";
-    //  }
-    //  std::cout << std::endl;
-    //  optimize_mat( new_mat, rows_dif, cols_dif );
-    //   rows_dif.clear();
-    //   cols_dif.clear();
-    //   calculate_mat_items_dif( inverseTransform, new_mat, rows_dif, cols_dif );
-    //  for( auto it : rows_dif )
-    //  {
-    //       std::cout << std::to_string( it ) << " ";
-    //  }
-    //  std::cout << std::endl;
-    //  for( auto it : cols_dif )
-    //  {
-    //       std::cout << std::to_string( it ) << " ";
-    //  }
-    //  std::cout << std::endl;
-    //  std::cout << "after " << nir_misc::calculate_mat_items_sum( new_mat ) << std::endl;
-    //  nir_misc::print_Mat( img.img );
-    //  nir_misc::print_Mat( new_mat);
-    
+     {
+          nir_cv_emb emb = nir_cv_emb( img.img, area_width );
+
+         if( match_sequences( aux_seq, emb.auxiliary_sequence ) != -1 )
+         {
+               new_mat.convertTo( new_phase, CV_32F );
+               emb.get_phase( new_phase );
+               new_mat.convertTo( inverseTransform, CV_32F );
+               return emb.auxiliary_sequence;
+         }
+     }
+
+  //   calculate_mat_items_dif( inverseTransform, new_mat, rows_dif, cols_dif );
+    // optimize_mat( new_mat, rows_dif, cols_dif );
 
      nir_cv_emb emb = nir_cv_emb( new_mat, area_width );
-
      new_mat.convertTo( new_phase, CV_32F );
      emb.get_phase( new_phase );
      new_mat.convertTo( inverseTransform, CV_32F );
      return emb.auxiliary_sequence;
 }
 
-// std::vector<float> count_new_auxiliary_sequence( const float old_sum, float area_width, std::vector<float> best_embedding, cv::Mat& inverseTransform, cv::Mat& new_phase )
-// {
-//      nir_cv_dft img = nir_cv_dft( inverseTransform );
-
-//      const int summ_diff = old_sum - nir_misc::calculate_mat_items_sum( img.img );
-//     //  cv::Mat buf_img;
-//     //  img.img.convertTo(buf_img, CV_32F);
-
-//      nir_cv_emb emb = nir_cv_emb( img.img, area_width );
-//     //  std::cout << "after " << nir_misc::calculate_mat_items_sum( img.img ) << std::endl;
-//      img.img.convertTo( new_phase, CV_32F );
-//      emb.get_phase( new_phase );
-//      img.img.convertTo( inverseTransform, CV_32F );
-//      return emb.auxiliary_sequence;
-//}
-
-int match_sequences( std::vector<float> message, std::vector<float> modified_img )
+std::vector<float> count_new2_auxiliary_sequence( float area_width, cv::Mat& inverseTransform, cv::Mat& new_phase )
 {
-     //todo check size
-     if( message.size() != modified_img.size() )
-     {
-          nir_log::warning( "message.size() != modified_img.size() in function match_sequences" );
-     }
-     std::vector<float> buf_modified_img, buf_modified_msg;
-     for( size_t i = 0; i < modified_img.size(); ++i )
-     {
-          if( modified_img[ i ] != -1 )
-          {
-               buf_modified_img.push_back( modified_img[ i ] );
-          }
-          if( message[ i ] != -1 )
-          {
-               buf_modified_msg.push_back( message[ i ] );
-          }
-     }
-     if( buf_modified_img.size() > buf_modified_msg.size() )
-     {
-          nir_log::info( "buf_modified_img.size() > buf_modified_msg.size()" );
-          return -1;
-     }
-     for( size_t i = 0; i < buf_modified_img.size() && i < buf_modified_msg.size(); ++i )
-     {
-          if( buf_modified_img[ i ] != buf_modified_msg[ i ] )
-          {
-               return -1;
-          }
-     }
-     nir_misc::printv( buf_modified_img );
-     nir_misc::printv( buf_modified_msg );
-     if( buf_modified_img.size() < buf_modified_msg.size() )
-     {
-          return buf_modified_img.size();
-     }
-     return buf_modified_msg.size();
+     nir_cv_dft img = nir_cv_dft( inverseTransform );
+     //  cv::Mat buf_img;
+     //  img.img.convertTo(buf_img, CV_32F);
+
+     nir_cv_emb emb = nir_cv_emb( img.img, area_width );
+     //  std::cout << "after " << nir_misc::calculate_mat_items_sum( img.img ) << std::endl;
+     img.img.convertTo( new_phase, CV_32F );
+     emb.get_phase( new_phase );
+     img.img.convertTo( inverseTransform, CV_32F );
+     return emb.auxiliary_sequence;
 }
 
 } // namespace
@@ -338,6 +319,7 @@ nir_cv_emb::nir_cv_emb( cv::Mat& input, const float& input_area_width, const std
                     {
                          break;
                     }
+                    break;
                     processing_empty_block();
                }
                else
@@ -360,7 +342,7 @@ nir_cv_emb::nir_cv_emb( cv::Mat& input, const float& input_area_width )
 void nir_cv_emb::get_average_count()
 {
      nir_log::info( "Start get_average_count" );
-     for( auto it : area_positions )
+     for( auto& it : area_positions )
      {
           average_count += phase.at<float>( it.first, it.second ) < 0 ? -phase.at<float>( it.first, it.second ) : phase.at<float>( it.first, it.second );
      }
@@ -425,7 +407,7 @@ void nir_cv_emb::find_clear_sequence()
 void nir_cv_emb::calculate_overlay_options()
 {
      nir_log::info( "Start calculate_overlay_options" );
-     for( auto it : clear_sequence )
+     for( auto& it : clear_sequence )
      {
           if( it[ 0 ] < 0 )
           {
@@ -508,11 +490,11 @@ void nir_cv_emb::find_best_embedding()
                     {
                          if( do_test_embedded( new_phase ) )
                          {
-                             capacity = buf_capacity_;
+                              capacity = buf_capacity_;
                               replacements_counter = buf_replacements_counter;
                               is_embedded = true;
-                              std::cout <<"I= " << i<< std::endl;
-                              idft.convertTo(idft_, CV_32F);
+                              std::cout << "I= " << i << std::endl;
+                              idft.convertTo( idft_, CV_32F );
                               break;
                          }
                     }
@@ -520,10 +502,9 @@ void nir_cv_emb::find_best_embedding()
           }
           next_step( message, buf );
      }
-     if(!is_embedded)
+     if( !is_embedded )
      {
-     capacity = 0;
-
+          capacity = 0;
      }
      nir_log::info( "End find_best_embedding" );
 }
@@ -616,21 +597,14 @@ bool nir_cv_emb::do_test_embedded( cv::Mat phase_to_input )
                ret.push_back( M_PI_2 );
                continue;
           }
-          ret.push_back( 3.14);//get_random_phase() );
+          ret.push_back( 3.14 ); //get_random_phase() );
      }
      create_new_phase_matrix( ret );
      std::vector<float> buf;
      do_dft( new_phase, amp, new_dft );
      do_idft( new_dft );
-    //  std::cout << "before " << nir_misc::calculate_mat_items_sum( idft ) << std::endl; // todo delete
-    //  nir_misc::print_Mat( idft );
-     buf = count_new_auxiliary_sequence( area_width, idft, new_phase );
+     buf = count_new_auxiliary_sequence( area_width, best_embedding, idft, new_phase );
 
-    //  nir_misc::printv(best_embedding);
-    //  nir_misc::printv(buf);
-    //  int i;
-    //  std::cin >> i;
-     //  buf = count_new_auxiliary_sequence( nir_misc::calculate_mat_items_sum( idft ),area_width, best_embedding,idft, new_phase );
      nir_log::info( "End do_test_embedded" );
      buf_capacity_ = match_sequences( best_embedding, buf );
      if( buf_capacity_ < min_capacity )
@@ -675,10 +649,10 @@ void nir_cv_emb::processing_empty_block()
      }
      do_dft( phase, amp, new_dft );
      do_idft( new_dft );
-     auxiliary_sequence = count_new_auxiliary_sequence( area_width, idft, new_phase );
+     auxiliary_sequence = count_new2_auxiliary_sequence( area_width, idft, new_phase );
      new_count_auxiliary_sequence( area_positions, area_width, phase );
      new_phase.convertTo( phase, CV_32F );
-     idft.convertTo(idft_, CV_32F);
+     idft.convertTo( idft_, CV_32F );
      nir_log::info( "End processing_empty_block" );
 }
 void nir_cv_emb::create_area_positions()
