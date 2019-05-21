@@ -29,7 +29,7 @@ int main()
      std::vector<float> part_of_message;
      nir_cv_img img = nir_cv_img( pic );
      const float area_width = nir_misc::count_area_width( message.length(), img.vec_img.size() );
-     for( size_t i = 105; i < 120 /*img.vec_img.size()*/; ++i )
+     for( size_t i = 75; i < 90 /*img.vec_img.size()*/; ++i )
      {
           nir_log::warning( "Block number " + std::to_string( i ) );
 

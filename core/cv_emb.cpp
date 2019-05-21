@@ -9,6 +9,7 @@ namespace
 int match_sequences( std::vector<float> message, std::vector<float> modified_img )
 {
      //todo check size
+     int errors_count = 0;
      if( message.size() != modified_img.size() )
      {
           nir_log::warning( "message.size() != modified_img.size() in function match_sequences" );
@@ -34,8 +35,12 @@ int match_sequences( std::vector<float> message, std::vector<float> modified_img
      {
           if( buf_modified_img[ i ] != buf_modified_msg[ i ] )
           {
-               return -1;
+               --errors_count;
           }
+     }
+     if( errors_count < 0 )
+     {
+          return errors_count;
      }
      nir_misc::printv( buf_modified_img );
      nir_misc::printv( buf_modified_msg );
@@ -245,6 +250,36 @@ void optimize_mat( cv::Mat& r_mat, std::vector<int>& rows_dif, std::vector<int>&
           }
      }
 }
+std::vector<float> count_new_auxiliary_sequence_fix( float area_width, const std::vector<float>& aux_seq, cv::Mat& inverseTransform, cv::Mat& new_phase )
+{
+     std::vector<int> rows_dif;
+     std::vector<int> cols_dif;
+     nir_cv_dft img = nir_cv_dft( inverseTransform );
+     cv::Mat new_mat;
+     img.img.convertTo( new_mat, CV_32F );
+
+     {
+          nir_cv_emb emb = nir_cv_emb( img.img, area_width );
+
+          if( match_sequences( aux_seq, emb.auxiliary_sequence ) != -1 )
+          {
+               new_mat.convertTo( new_phase, CV_32F );
+               emb.get_phase( new_phase );
+               new_mat.convertTo( inverseTransform, CV_32F );
+               return emb.auxiliary_sequence;
+          }
+     }
+
+     calculate_mat_items_dif( inverseTransform, new_mat, rows_dif, cols_dif );
+     optimize_mat( new_mat, rows_dif, cols_dif );
+
+     nir_cv_emb emb = nir_cv_emb( new_mat, area_width );
+     new_mat.convertTo( new_phase, CV_32F );
+     emb.get_phase( new_phase );
+     new_mat.convertTo( inverseTransform, CV_32F );
+     return emb.auxiliary_sequence;
+}
+
 std::vector<float> count_new_auxiliary_sequence( float area_width, const std::vector<float>& aux_seq, cv::Mat& inverseTransform, cv::Mat& new_phase )
 {
      std::vector<int> rows_dif;
@@ -256,17 +291,14 @@ std::vector<float> count_new_auxiliary_sequence( float area_width, const std::ve
      {
           nir_cv_emb emb = nir_cv_emb( img.img, area_width );
 
-         if( match_sequences( aux_seq, emb.auxiliary_sequence ) != -1 )
-         {
+          if( match_sequences( aux_seq, emb.auxiliary_sequence ) != -1 )
+          {
                new_mat.convertTo( new_phase, CV_32F );
                emb.get_phase( new_phase );
                new_mat.convertTo( inverseTransform, CV_32F );
                return emb.auxiliary_sequence;
-         }
+          }
      }
-
-  //   calculate_mat_items_dif( inverseTransform, new_mat, rows_dif, cols_dif );
-    // optimize_mat( new_mat, rows_dif, cols_dif );
 
      nir_cv_emb emb = nir_cv_emb( new_mat, area_width );
      new_mat.convertTo( new_phase, CV_32F );
@@ -274,7 +306,6 @@ std::vector<float> count_new_auxiliary_sequence( float area_width, const std::ve
      new_mat.convertTo( inverseTransform, CV_32F );
      return emb.auxiliary_sequence;
 }
-
 std::vector<float> count_new2_auxiliary_sequence( float area_width, cv::Mat& inverseTransform, cv::Mat& new_phase )
 {
      nir_cv_dft img = nir_cv_dft( inverseTransform );
@@ -603,15 +634,42 @@ bool nir_cv_emb::do_test_embedded( cv::Mat phase_to_input )
      std::vector<float> buf;
      do_dft( new_phase, amp, new_dft );
      do_idft( new_dft );
-     buf = count_new_auxiliary_sequence( area_width, best_embedding, idft, new_phase );
 
+     cv::Mat idft_buf;
+     cv::Mat new_phase_buf;
+     idft.convertTo( idft_buf, CV_32F );
+     new_phase.convertTo( new_phase_buf, CV_32F );
+
+     buf = count_new_auxiliary_sequence( area_width, best_embedding, idft_buf, new_phase_buf );
      nir_log::info( "End do_test_embedded" );
      buf_capacity_ = match_sequences( best_embedding, buf );
+     if( buf_capacity_ < -999999 )
+     {
+          cv::Mat idft_buf_fix;
+          cv::Mat new_phase_buf_fix;
+          std::vector<float> buf_fix;
+          idft.convertTo( idft_buf_fix, CV_32F );
+          new_phase.convertTo( new_phase_buf_fix, CV_32F );
+          buf_fix = count_new_auxiliary_sequence_fix( area_width, best_embedding, idft_buf_fix, new_phase_buf_fix );
+          int buf_capacity_fix = match_sequences( best_embedding, buf_fix );
+          if( buf_capacity_fix > buf_capacity_ )
+          {
+               buf_capacity_ = buf_capacity_fix;
+               idft_buf_fix.convertTo( idft, CV_32F );
+               new_phase_buf_fix.convertTo( new_phase, CV_32F );
+               buf = buf_fix;
+          }
+     }
+     else
+     {
+          idft_buf.convertTo( idft, CV_32F );
+          new_phase_buf.convertTo( new_phase, CV_32F );
+     }
      if( buf_capacity_ < min_capacity )
      {
           buf_capacity_ = -1;
      }
-     if( -1 == buf_capacity_ )
+     if( 0 > buf_capacity_ )
      {
           auxiliary_sequence = buf;
 
